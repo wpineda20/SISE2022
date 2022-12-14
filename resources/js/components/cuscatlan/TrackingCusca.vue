@@ -49,10 +49,11 @@
                 </v-col>
                 -->
                 <v-col
-                  xs="9"
-                  sm="9"
-                  md="9"
+                  xs="12"
+                  sm="12"
+                  md="12"
                   class="d-none d-md-block d-lg-block"
+                  align="end"
                 >
                   <v-text-field
                     dense
