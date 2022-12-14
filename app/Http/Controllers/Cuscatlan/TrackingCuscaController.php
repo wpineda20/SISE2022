@@ -150,9 +150,9 @@ class TrackingCuscaController extends Controller
      */
     public function update(Request $request)
     {
-        if (auth()->user()->user_name != $request->user_name || !auth()->user()->hasRole('Administrador') || !auth()->user()->hasRole('Enlace')) {
-            return response()->json(["message" => "success", "reason" => "Únicamente $request->user_name o el administrador puede modificar el registro."]);
-        }
+        // if (auth()->user()->user_name != $request->user_name || !auth()->user()->hasRole('Administrador') || !auth()->user()->hasRole('Enlace')) {
+        //     return response()->json(["message" => "success", "reason" => "Únicamente $request->user_name o el administrador puede modificar el registro."]);
+        // }
 
         $status = TrakingStatus::where('status_name', $request->status_name)->first();
         $id = (int) Encrypt::decryptValue($request->id);
