@@ -74,12 +74,12 @@
                         }"
                         :min="1"
                         :max="500"
-                        :rows="2"
+                        :rows="3"
                       />
                     </v-col>
                     <!-- Description -->
                     <!-- Eje -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select
                         label="Eje"
                         v-model.trim="$v.editedItem.axis_description.$model"
@@ -287,7 +287,7 @@ export default {
         this.users = responses[1].data.users;
         this.axis = responses[2].data.axisCuscas;
 
-        console.log(responses);
+        // console.log(responses);
 
         this.recordsFiltered = this.records;
       }

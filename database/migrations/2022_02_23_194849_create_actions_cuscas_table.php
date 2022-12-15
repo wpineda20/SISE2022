@@ -26,6 +26,7 @@ class CreateActionsCuscasTable extends Migration
             $table->foreignId('created_user_id')->references('id')->on('users')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('results_cusca_id')->references('id')->on('results_cusca');
+            $table->foreignId('unit_id')->references('id')->on('units');
             //$table->foreignId('month_id')->references('id')->on('months');
             //$table->foreignId('year_id')->references('id')->on('years');
             //$table->foreignId('financings_id')->references('id')->on('financings');

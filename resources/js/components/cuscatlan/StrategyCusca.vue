@@ -77,7 +77,7 @@
                     </v-col>
                     <!-- Description Estrategica-->
                     <!-- Objetivo Programatico -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Objetivo Programático"
                         v-model.trim="$v.editedItem.description.$model"
@@ -92,7 +92,7 @@
                     </v-col>
                     <!-- Objetivo Programatico -->
                     <!-- Unidad Organizativa -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Unidad Organizativa"
                         v-model.trim="$v.editedItem.ou_name.$model"
@@ -107,7 +107,7 @@
                     </v-col>
                     <!-- Unidad Organizativa -->
                     <!-- User -->
-                    <v-col cols="12" sm="6" md="6" class="mt-2">
+                    <v-col cols="12" sm="12" md="12" class="mt-2">
                       <base-select
                         label="Usuario"
                         v-model.trim="$v.editedItem.user_name.$model"
@@ -318,7 +318,6 @@ export default {
           responses[2].data.programmatic_objectives;
         this.organizational_units = responses[3].data.organizationalUnits;
         this.actualUser = responses[4].data.user;
-        console.log(responses);
         this.recordsFiltered = this.records;
       }
     },
@@ -464,8 +463,8 @@ export default {
     openModal() {
       this.dialog = true;
       this.editedItem.user_name = this.actualUser.user_name;
-      this.editedItem.ou_name = this.organizational_units[0].ou_name;
-      this.editedItem.description = this.programmatic_objectives[0].description;
+      this.editedItem.ou_name = "";
+      this.editedItem.description = "";
       this.editedItem.description_strategy = "";
       //this.editedItem.executed = false;
     },

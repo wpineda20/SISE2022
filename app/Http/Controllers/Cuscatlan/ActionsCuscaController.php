@@ -10,6 +10,7 @@ use App\Models\Cuscatlan\Month;
 use App\Models\Cuscatlan\OrganizationalUnit;
 use App\Models\Cuscatlan\ResultsCusca;
 use App\Models\Cuscatlan\Year;
+use App\Models\Cuscatlan\Unit;
 use Illuminate\Http\Request;
 use App\Models\Cuscatlan\TrakingCuscaMonthYearAction;
 
@@ -29,7 +30,8 @@ class ActionsCuscaController extends Controller
             'responsable_name',
             'verification_method',
             'data_source',
-            'actions_cusca.measure_unit',
+            // 'actions_cusca.measure_unit',
+            'un.unit_name',
             'budget_executed',
             'user_name',
             'result_description',
@@ -39,12 +41,13 @@ class ActionsCuscaController extends Controller
             'y.year_name',
             'actions_cusca.id as id',
         )
-        ->join('users as u', 'actions_cusca.user_id', '=', 'u.id')
-        ->join('results_cusca as rs', 'actions_cusca.results_cusca_id', '=', 'rs.id')
-        ->join('organizational_units as ou', 'rs.organizational_units_id', '=', 'ou.id')
-        //->join('months as m', 'rs.month_id', '=', 'm.id')
-        ->join('years as y', 'rs.year_id', '=', 'y.id')
-        ->get();
+            ->join('users as u', 'actions_cusca.user_id', '=', 'u.id')
+            ->join('results_cusca as rs', 'actions_cusca.results_cusca_id', '=', 'rs.id')
+            ->join('organizational_units as ou', 'rs.organizational_units_id', '=', 'ou.id')
+            //->join('months as m', 'rs.month_id', '=', 'm.id')
+            ->join('years as y', 'rs.year_id', '=', 'y.id')
+            ->join('units as un', 'actions_cusca.unit_id', '=', 'un.id')
+            ->get();
 
         $months = Month::all();
         foreach ($actionsCusca as $key => $action) {
@@ -60,10 +63,12 @@ class ActionsCuscaController extends Controller
             }
         }
 
-        $actionsCusca = EncryptController::encryptArray($actionsCusca, ['id', 'user_id',
-        'results_cusca_id']);
+        $actionsCusca = EncryptController::encryptArray($actionsCusca, [
+            'id', 'user_id', 'unit_id',
+            'results_cusca_id'
+        ]);
 
-        return response()->json(['message' => 'success', 'actionsCusca'=>$actionsCusca]);
+        return response()->json(['message' => 'success', 'actionsCusca' => $actionsCusca]);
     }
 
     /**
@@ -81,10 +86,11 @@ class ActionsCuscaController extends Controller
             'responsable_name' => $request->responsable_name,
             'verification_method' => $request->verification_method,
             'data_source' => $request->data_source,
-            'measure_unit' => $request->measure_unit,
+            // 'measure_unit' => $request->measure_unit,
             'budget_executed' => $request->budget_executed,
             'created_user_id' => auth()->user()->id,
             'user_id' => User::where('user_name', $request->user_name)->first()->id,
+            'unit_id' => Unit::where('unit_name', $request->unit_name)->first()->id,
             'results_cusca_id' => ResultsCusca::where('result_description', $request->result_description)->first()->id,
         ]);
 
@@ -100,7 +106,7 @@ class ActionsCuscaController extends Controller
             }
         }
 
-        return response()->json(['message'=>'success']);
+        return response()->json(['message' => 'success']);
     }
 
     /**
@@ -124,12 +130,14 @@ class ActionsCuscaController extends Controller
     public function update(Request $request)
     {
         $users = User::where('user_name', $request->user_name)->first();
+        $units = Unit::where('unit_name', $request->unit_name)->first();
 
         $resultsCusca = ResultsCusca::where('result_description', $request->result_description)->first();
 
-        $data = EncryptController::decryptModel($request->except(['user_name', 'result_description', 'year_goal', 'indicator_id', 'organizational_units_id', 'year_id', 'period_id', 'strategy_cusca_id', 'ou_name', 'month_name','year_name', 'months']), 'id');
+        $data = EncryptController::decryptModel($request->except(['user_name', 'result_description', 'year_goal', 'indicator_id', 'organizational_units_id', 'year_id', 'period_id', 'strategy_cusca_id', 'ou_name', 'month_name', 'year_name', 'months', 'unit_name']), 'id');
 
         $data['user_id'] = $users->id;
+        $data['unit_id'] = $units->id;
         $data['results_cusca_id'] = $resultsCusca->id;
 
         ActionsCusca::where('id', $data['id'])->update($data);
@@ -157,7 +165,7 @@ class ActionsCuscaController extends Controller
         }
 
 
-        return response()->json(["message"=>"success"]);
+        return response()->json(["message" => "success"]);
     }
 
     /**
@@ -172,6 +180,6 @@ class ActionsCuscaController extends Controller
         ActionsCusca::where('id', $id)->delete();
         TrakingCuscaMonthYearAction::where('actions_cusca_id', $id)->delete();
 
-        return response()->json(["message"=>"success"]);
+        return response()->json(["message" => "success"]);
     }
 }

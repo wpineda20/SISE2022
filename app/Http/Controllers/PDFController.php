@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 class PDFController extends Controller
 {
     /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function generatePDF(Request $request)
     {
         $ou_name = $request->ou_name;
@@ -23,12 +23,17 @@ class PDFController extends Controller
 
         switch ($planification_name) {
             case "Plan cuscatlán":
-                dd("Plan cuscatlán");
+                // dd("Plan cuscatlán");
                 break;
         }
+        $data = [
+            'name' => $ou_name,
+            'value' => $value,
+        ];
+
 
         $pdf = PDF::loadView('PDF.report', compact('data'));
 
-        return $pdf->stream('report-'.now().'.pdf');
+        return $pdf->stream('report-' . now() . '.pdf');
     }
 }

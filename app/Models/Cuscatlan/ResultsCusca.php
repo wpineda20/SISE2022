@@ -27,6 +27,7 @@ class ResultsCusca extends Model
         'organizational_units_id',
         'year_id',
         'period_id',
+        'unit_id'
     ];
     public $hidden = [
         'created_at',

@@ -88,6 +88,28 @@
                     </ul>
                 </li>
                 @endif
+                <!-- Plan Cuscatlán -->
+                <li>
+                    <div class="icon-link">
+                        <a href="#" class="mb-1">
+                            <i class="material-icons md-19 ">fact_check</i>
+                        </a>
+                        <p class="link">Plan Cuscatlán</p>
+                    </div>
+                    <ul class="sub-menu">
+                        @role('Administrador|Auditor')
+                        <li><a href="{{ url('/axisCuscatlan') }}">Ejes</a></li>
+                        <li><a href="{{ url('/programmaticObjective ') }}">Objetivos Programáticos</a></li>
+                        <li><a href="{{ url('/strategyCusca') }}">Estrategias</a></li>
+                        <li><a href="{{ url('/resultsCuscatlan') }}">Resultados</a></li>
+                        <li><a href="{{ url('/actionsCuscatlan') }}">Acciones</a></li>
+                        @endrole
+                        @hasanyrole('Administrador|Enlace')
+                        <li><a href="{{ url('/trackingCuscatlan') }}">Seguimientos</a></li>
+                        @endhasanyrole
+                    </ul>
+                </li>
+                <!-- Plan Cuscatlán -->
                 <!-- Catálogos -->
                 @if (auth()->user()->hasRole(['Enlace', 'Administrador']))
                 <!-- Plan Desarrollo Social -->
@@ -110,28 +132,6 @@
                     </ul> --}}
                 </li>
                 <!-- Plan Desarrollo Social -->
-                <!-- Plan Cuscatlán -->
-                <li>
-                    <div class="icon-link">
-                        <a href="#" class="mb-1">
-                            <i class="material-icons md-19 ">fact_check</i>
-                        </a>
-                        <p class="link">Plan Cuscatlán</p>
-                    </div>
-                    <ul class="sub-menu">
-                        @role('Administrador')
-                        <li><a href="{{ url('/axisCuscatlan') }}">Ejes</a></li>
-                        <li><a href="{{ url('/programmaticObjective ') }}">Objetivos Programáticos</a></li>
-                        <li><a href="{{ url('/strategyCusca') }}">Estrategias</a></li>
-                        <li><a href="{{ url('/resultsCuscatlan') }}">Resultados</a></li>
-                        <li><a href="{{ url('/actionsCuscatlan') }}">Acciones</a></li>
-                        @endrole
-                        @hasanyrole('Administrador|Enlace')
-                        <li><a href="{{ url('/trackingCuscatlan') }}">Seguimientos</a></li>
-                        @endhasanyrole
-                    </ul>
-                </li>
-                <!-- Plan Cuscatlán -->
                 <!-- Política Crecer Juntos -->
                 <li>
                     <div class="icon-link ">
@@ -280,10 +280,10 @@
                         <p class="link">Reportes</p>
                     </div>
                     <ul class="sub-menu">
-                        @role('Administrador')
+                        @role('Administrador|Auditor')
                         {{-- <li><a href="{{ url('/programmaticObjective') }}">Mensuales</a></li> --}}
-                        <li><a href="{{ url('/municipalities') }}">Mensuales</a></li>
-                        <li><a href="{{ url('/municipalities') }}">Acumulados</a></li>
+                        <li><a href="{{ url('/reports') }}">Mensuales</a></li>
+                        <li><a href="{{ url('/reports') }}">Acumulados</a></li>
                         @endrole
                         @role('Enlace')
                         <li><a href="{{ url('/municipalities') }}">Seguimientos</a></li>

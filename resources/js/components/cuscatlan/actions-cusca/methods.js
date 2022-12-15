@@ -1,7 +1,7 @@
 import userApi from "../../../apis/userApi";
 import resultsCuscaApi from "../../../apis/resultsCuscaApi";
 import monthApi from "../../../apis/monthApi";
-//import yearApi from "../../../apis/yearApi";
+import unitApi from "../../../apis/unitApi";
 import actionsCuscaApi from "../../../apis/actionsCuscaApi";
 import lib from "../../../libs/function";
 //import moment from "moment"
@@ -17,10 +17,10 @@ export default {
                 params: { skip: 0, take: 200 },
             }),
             resultsCuscaApi.get(),
-            //yearApi.get(),
             monthApi.get(),
             userApi.get("/actualUserRole"),
             userApi.post("/actualUser"),
+            unitApi.get(),
         ];
         let responses = await Promise.all(requests).catch((error) => {
             this.updateAlert(
@@ -42,6 +42,7 @@ export default {
             this.months = responses[3].data.months;
             this.editedItem.months = this.months;
             this.actualUser = responses[5].data.user;
+            this.units = responses[6].data.units;
 
             this.recordsFiltered = this.records;
         }
@@ -104,7 +105,7 @@ export default {
 
     async save() {
         this.$v.$touch();
-        if (this.$v.editedItem.$invalid || this.numberMonths()) {
+        if (this.$v.editedItem.$invalid) {
             this.updateAlert(true, "Campos obligatorios.", "fail");
 
             return;
@@ -134,7 +135,6 @@ export default {
                 );
             }
         } else {
-
             const res = await actionsCuscaApi
                 .post(null, this.editedItem)
                 .catch((error) => {
@@ -206,9 +206,9 @@ export default {
         this.editedItem.budget_executed = 0;
         this.editedItem.verification_method = "";
         this.editedItem.data_source = "";
-        //this.editedItem.executed = false;
         this.editedItem.months = this.months;
-        this.editedItem.months.forEach(month => month.value = false)
+        this.editedItem.months.forEach((month) => (month.value = false));
+        this.editedItem.unit_name = this.units[0].unit_name;
 
         this.$v.$reset();
     },
@@ -218,6 +218,8 @@ export default {
             (element) => element.value == true
         );
 
-        this.editedItem.annual_actions = this.editedItem.months.filter((element) => element.value).length;
+        this.editedItem.annual_actions = this.editedItem.months.filter(
+            (element) => element.value
+        ).length;
     },
 };

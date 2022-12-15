@@ -78,7 +78,7 @@
                     </v-col>
                     <!-- Axis -->
                     <!-- Objectives -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Institución"
                         v-model.trim="$v.editedItem.institution_name.$model"
@@ -93,7 +93,7 @@
                     </v-col>
                     <!-- Objectives -->
                     <!-- Users -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Usuario"
                         v-model.trim="$v.editedItem.user_name.$model"
@@ -446,7 +446,7 @@ export default {
     openModal() {
       this.dialog = true;
       //this.editedItem.user_name = this.users[0].user_name;
-      this.editedItem.institution_name = this.institutions[0].institution_name;
+      this.editedItem.institution_name = "";
       this.editedItem.axis_description = "";
       //this.editedItem.executed = false;
       this.editedItem.user_name = this.actualUser.user_name;

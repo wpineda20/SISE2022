@@ -59,7 +59,7 @@
                   <!-- Form -->
                   <v-row>
                     <!-- Description Acciones -->
-                    <v-col cols="12" sm="6" md="12">
+                    <v-col cols="12" sm="12" md="12">
                       <base-text-area
                         label="Acciones"
                         v-model.trim="$v.editedItem.action_description.$model"
@@ -67,7 +67,7 @@
                         validationTextType="default"
                         :min="1"
                         :max="500"
-                        :rows="2"
+                        :rows="3"
                       />
                     </v-col>
                     <!-- Description Acciones-->
@@ -117,15 +117,27 @@
                     <!-- Data Source -->
 
                     <!--Measure Unit -->
-                    <v-col cols="12" sm="12" md="12">
+                    <!-- <v-col cols="12" sm="12" md="6">
                       <base-input
                         label="Unidad de medida"
                         v-model="$v.editedItem.measure_unit.$model"
                         :validation="$v.editedItem.measure_unit"
                         validationTextType="default"
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Measure Unit -->
+
+                    <!-- Unit -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Unidad de medida"
+                        v-model.trim="$v.editedItem.unit_name.$model"
+                        :items="units"
+                        item="unit_name"
+                        :validation="$v.editedItem.unit_name"
+                      />
+                    </v-col>
+                    <!-- Unit -->
 
                     <!-- Bubget executed -->
                     <v-col cols="12" sm="12" md="6">
@@ -138,6 +150,17 @@
                     </v-col>
                     <!-- Bubget executed -->
 
+                    <!-- Results -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-select-search
+                        label="Resultado"
+                        v-model="$v.editedItem.result_description.$model"
+                        :items="resultsCusca"
+                        item="result_description"
+                        :validation="$v.editedItem.result_description"
+                      />
+                    </v-col>
+                    <!-- Results -->
                     <!-- Users -->
                     <v-col cols="12" sm="6" md="6">
                       <base-select-search
@@ -151,18 +174,6 @@
                     <!-- :readonly="true" -->
                     <!-- Users -->
 
-                    <!-- Results -->
-                    <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Resultado"
-                        v-model="$v.editedItem.result_description.$model"
-                        :items="resultsCusca"
-                        item="result_description"
-                        :validation="$v.editedItem.result_description"
-                      />
-                    </v-col>
-                    <!-- Results -->
-
                     <!-- Annual Actions -->
                     <v-col cols="12" sm="6" md="6">
                       <base-input
@@ -173,7 +184,6 @@
                         type="number"
                         :min="2000"
                         :max="2050"
-                        readonly
                       />
                     </v-col>
                     <!-- Annual Actions -->
@@ -321,7 +331,7 @@ export default {
       budget_executed: 0,
       user_name: "",
       result_description: "",
-      //month_name: "",
+      unit_name: "",
       //year_name: "",
       //executed: false,
       months: [],
@@ -336,7 +346,7 @@ export default {
       budget_executed: 0,
       user_name: "",
       result_description: "",
-      //month_name: "",
+      unit_name: "",
       //year_name: "",
       //executed: false,
       months: [],
@@ -346,6 +356,7 @@ export default {
     alertEvent: "success",
     showAlert: false,
     users: [],
+    units: [],
     resultsCusca: [],
 
     //years: [],

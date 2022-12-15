@@ -60,7 +60,7 @@
                   <!-- User -->
                   <v-row>
                     <!-- Result -->
-                    <v-col cols="12" sm="6" md="12">
+                    <v-col cols="12" sm="12" md="12">
                       <base-text-area
                         label="Resultado"
                         v-model.trim="$v.editedItem.result_description.$model"
@@ -68,20 +68,32 @@
                         validationTextType="none"
                         :min="1"
                         :max="500"
-                        :rows="2"
+                        :rows="3"
                       />
                     </v-col>
                     <!-- Result -->
 
+                    <!-- Unit -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Unidad de medida"
+                        v-model.trim="$v.editedItem.unit_name.$model"
+                        :items="units"
+                        item="unit_name"
+                        :validation="$v.editedItem.unit_name"
+                      />
+                    </v-col>
+                    <!-- Unit -->
+
                     <!-- Mesure Unit -->
-                    <v-col cols="12" sm="12" md="12">
+                    <!-- <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Unidad de medida"
                         v-model="$v.editedItem.measure_unit.$model"
                         :validation="$v.editedItem.measure_unit"
                         validationTextType="none"
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Mesure Unit -->
 
                     <!-- Year Goal -->
@@ -122,7 +134,7 @@
                     <!-- Users -->
 
                     <!-- Organizational Unit -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Unidad organizativa"
                         v-model.trim="$v.editedItem.ou_name.$model"
@@ -158,7 +170,7 @@
                     <!-- Period -->
 
                     <!-- Strategy -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Estrategía"
                         v-model.trim="$v.editedItem.description_strategy.$model"
@@ -245,6 +257,7 @@ import indicatorApi from "../../apis/indicatorApi";
 import resultsCuscaApi from "../../apis/resultsCuscaApi";
 import periodApi from "../../apis/periodApi";
 import yearApi from "../../apis/yearApi";
+import unitApi from "../../apis/unitApi";
 import strategyCuscaApi from "../../apis/strategyCuscaApi";
 import lib from "../../libs/function";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
@@ -256,7 +269,8 @@ export default {
     dialogDelete: false,
     headers: [
       { text: "RESULTADO", value: "result_description" },
-      { text: "UNIDAD DE MEDIDA", value: "measure_unit" },
+      // { text: "UNIDAD DE MEDIDA", value: "measure_unit" },
+      { text: "UNIDAD DE MEDIDA", value: "unit_name" },
       { text: "METAS AL AÑO", value: "year_goal" },
       //{ text: "EJECUTADO", value: "executed" },
       { text: "USUARIO", value: "user_name" },
@@ -273,6 +287,7 @@ export default {
     editedItem: {
       result_description: "",
       measure_unit: "",
+      unit_name: "",
       year_goal: "",
       //executed: false,
       user_name: "",
@@ -286,6 +301,7 @@ export default {
     defaultItem: {
       result_description: "",
       measure_unit: "",
+      unit_name: "",
       year_goal: "",
       //executed: false,
       user_name: "",
@@ -302,6 +318,7 @@ export default {
     showAlert: false,
     users: [],
     //axisCuscas: [],
+    units: [],
     indicators: [],
     organizationalUnits: [],
     periods: [],
@@ -319,11 +336,11 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
-      measure_unit: {
-        required,
-        minLength: minLength(1),
-        maxLength: maxLength(150),
-      },
+      // measure_unit: {
+      //   required,
+      //   minLength: minLength(1),
+      //   maxLength: maxLength(150),
+      // },
       year_goal: {
         required,
         minLength: minLength(1),
@@ -344,6 +361,9 @@ export default {
         required,
       },
       ou_name: {
+        required,
+      },
+      unit_name: {
         required,
       },
       period_name: {
@@ -390,6 +410,7 @@ export default {
         periodApi.get(),
         yearApi.get(),
         userApi.post("/actualUser"),
+        unitApi.get(),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -409,6 +430,7 @@ export default {
         this.periods = responses[5].data.periods;
         this.years = responses[6].data.years;
         this.actualUser = responses[7].data.user;
+        this.units = responses[8].data.units;
 
         this.recordsFiltered = this.records;
       }
@@ -423,6 +445,7 @@ export default {
       this.$v.editedItem.ou_name.$model = this.editedItem.ou_name;
       this.$v.editedItem.period_name.$model = this.editedItem.period_name;
       this.$v.editedItem.year_name.$model = this.editedItem.year_name;
+      this.$v.editedItem.unit_name.$model = this.editedItem.unit_name;
       this.$v.editedItem.description_strategy.$model =
         this.editedItem.description_strategy;
     },
@@ -567,6 +590,8 @@ export default {
       //this.editedItem.executed = false;
       this.editedItem.result_description = "";
       this.editedItem.measure_unit = "";
+      this.editedItem.unit_name = this.units[0].unit_name;
+      this.editedItem.year_goal = 0;
     },
   },
 };

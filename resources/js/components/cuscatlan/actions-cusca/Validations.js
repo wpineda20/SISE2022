@@ -35,11 +35,11 @@ const Validations = {
             minLength: minLength(1),
             maxLength: maxLength(150),
         },
-        measure_unit: {
-            required,
-            minLength: minLength(1),
-            maxLength: maxLength(150),
-        },
+        // measure_unit: {
+        //     required,
+        //     minLength: minLength(1),
+        //     maxLength: maxLength(150),
+        // },
         budget_executed: {
             required,
             minLength: minLength(1),
@@ -50,6 +50,10 @@ const Validations = {
             minLength: minLength(1),
         },
         result_description: {
+            required,
+            minLength: minLength(1),
+        },
+        unit_name: {
             required,
             minLength: minLength(1),
         },

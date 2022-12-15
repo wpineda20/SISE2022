@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ActionsCusca extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'actions_cusca';
 
@@ -24,13 +24,13 @@ class ActionsCusca extends Model
         'responsable_name',
         'verification_method',
         'data_source',
-        'measure_unit',
+        // 'measure_unit',
         'budget_executed',
         'created_user_id',
         'user_id',
         'results_cusca_id',
         //'month_id',
-        //'year_id'
+        'unit_id'
     ];
     public $hidden = [
         'created_at',
