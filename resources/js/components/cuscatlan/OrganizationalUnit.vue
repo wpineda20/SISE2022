@@ -13,6 +13,7 @@
     />
     <v-data-table
       :headers="headers"
+      :loading="loading"
       :items="recordsFiltered"
       sort-by="ou_name"
       class="elevation-3 shadow p-3 mt-3"
@@ -30,6 +31,7 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    :disabled="loading != false"
                   >
                     Agregar
                   </v-btn>
@@ -172,6 +174,7 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading:false,
     dialogDelete: false,
     headers: [
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
@@ -231,6 +234,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -247,6 +251,7 @@ export default {
       this.directions = responses[1].data.directions;
 
       this.recordsFiltered = this.records;
+      this.loading = false;
     },
 
     editItem(item) {

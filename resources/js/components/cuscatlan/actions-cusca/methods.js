@@ -8,6 +8,7 @@ import lib from "../../../libs/function";
 
 export default {
     async initialize() {
+        this.loading = true;
         this.records = [];
         this.recordsFiltered = [];
 
@@ -38,7 +39,6 @@ export default {
             this.records = responses[0].data.actionsCusca;
             this.users = responses[1].data.users;
             this.resultsCusca = responses[2].data.resultsCusca;
-            //this.years = responses[3].data.years;
             this.months = responses[3].data.months;
             this.editedItem.months = this.months;
             this.actualUser = responses[5].data.user;
@@ -46,6 +46,7 @@ export default {
 
             this.recordsFiltered = this.records;
         }
+        this.loading = false;
     },
 
     editItem(item) {
@@ -105,7 +106,7 @@ export default {
 
     async save() {
         this.$v.$touch();
-        if (this.$v.editedItem.$invalid) {
+        if (this.$v.editedItem.$invalid || this.numberMonths()) {
             this.updateAlert(true, "Campos obligatorios.", "fail");
 
             return;
@@ -195,11 +196,6 @@ export default {
         this.editedItem.result_description =
             this.resultsCusca[0].result_description;
         this.editedItem.user_name = this.actualUser.user_name;
-        //this.editedItem.year_name = new Date().getFullYear();
-
-        //const month_name = moment().format("MMMM");
-        //this.editedItem.month_name = month_name.charAt(0).toUpperCase() + month_name.slice(1);
-
         this.editedItem.action_description = "";
         this.editedItem.responsable_name = "";
         this.editedItem.annual_actions = 0;
@@ -209,6 +205,8 @@ export default {
         this.editedItem.months = this.months;
         this.editedItem.months.forEach((month) => (month.value = false));
         this.editedItem.unit_name = this.units[0].unit_name;
+        //const month_name = moment().format("MMMM");
+        //this.editedItem.month_name = month_name.charAt(0).toUpperCase() + month_name.slice(1);
 
         this.$v.$reset();
     },
@@ -218,8 +216,8 @@ export default {
             (element) => element.value == true
         );
 
-        this.editedItem.annual_actions = this.editedItem.months.filter(
-            (element) => element.value
-        ).length;
+        // this.editedItem.annual_actions = this.editedItem.months.filter(
+        //     (element) => element.value
+        // ).length;
     },
 };

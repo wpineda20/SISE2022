@@ -14,6 +14,7 @@
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="month_name"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -30,6 +31,7 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    :disabled="loading != false"
                     @click="$v.editedItem.$reset()"
                   >
                     Agregar
@@ -158,6 +160,7 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "NOMBRE", value: "month_name" },
@@ -211,6 +214,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -224,6 +228,7 @@ export default {
 
       this.records = res.data.months;
       this.recordsFiltered = res.data.months;
+      this.loading = false;
     },
 
     editItem(item) {

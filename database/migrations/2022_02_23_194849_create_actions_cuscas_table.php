@@ -21,7 +21,6 @@ class CreateActionsCuscasTable extends Migration
             $table->string('responsable_name');
             $table->string('verification_method');
             $table->string('data_source');
-            $table->text('measure_unit', 500);
             $table->double('budget_executed', 8, 2);
             $table->foreignId('created_user_id')->references('id')->on('users')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');

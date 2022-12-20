@@ -14,6 +14,7 @@
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="direction_name"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -30,6 +31,7 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    :disabled="loading != false"
                   >
                     Agregar
                   </v-btn>
@@ -171,6 +173,7 @@ import { required, minLength, maxLength } from "vuelidate/lib/validators";
 export default {
   data: () => ({
     search: "",
+    loading:false,
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -231,6 +234,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -247,6 +251,7 @@ export default {
       this.institutions = responses[1].data.institutions;
 
       this.recordsFiltered = this.records;
+      this.loading = false;
     },
 
     editItem(item) {

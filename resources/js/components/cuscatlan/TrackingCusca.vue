@@ -11,6 +11,15 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="start" cols="12" md="12" sm="12">
+          <v-btn href="/actionsCuscatlan" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <div class="container">
       <v-row>
         <v-tabs grow background-color="#f4f7fd">
@@ -25,6 +34,7 @@
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="month_name"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -32,7 +42,7 @@
         <v-toolbar flat>
           <v-toolbar-title>Seguimientos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <!--
@@ -93,7 +103,8 @@
                         }"
                         :min="15"
                         :max="4000"
-                        :rows="3"
+                        :rows="6"
+                        auto-grow
                       />
                     </v-col>
                     <!-- Tracking Detail -->
@@ -263,7 +274,7 @@
                         :readonly="role == 'Enlace'"
                         :min="0"
                         :max="500"
-                        :rows="3"
+                        :rows="4"
                       />
                     </v-col>
                     <!-- Observation -->
@@ -290,7 +301,7 @@
                         }"
                         :min="0"
                         :max="500"
-                        :rows="3"
+                        :rows="4"
                       />
                     </v-col>
                     <!-- Reply -->
@@ -412,6 +423,7 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading:false,
     dialogDelete: false,
     headers: [
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
@@ -549,7 +561,7 @@ export default {
 
   methods: {
     async initialize() {
-      this.loadingDataForm = true;
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -592,7 +604,7 @@ export default {
         this.recordsFiltered = this.records;
       }
 
-      this.loadingDataForm = false;
+      this.loading = false;
     },
 
     editItem(item) {
@@ -767,6 +779,7 @@ export default {
     },
 
     async filterTracking(filter = "Mensuales") {
+      this.loading = true;
       this.filter = filter;
 
       const response = await trackingCuscaApi
@@ -789,6 +802,7 @@ export default {
 
       this.records = response.data.trackingsCusca;
       this.recordsFiltered = this.records;
+      this.loading = false;
     },
   },
 };

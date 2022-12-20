@@ -65,6 +65,8 @@ class ResultsCuscaController extends Controller
      */
     public function store(Request $request)
     {
+
+        // dd($request);
         $data = $request->except([
             'user_name', 'indicator_name', 'ou_name', 'year_name',
             'period_name', 'description_strategy', 'unit_name'

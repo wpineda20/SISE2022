@@ -72,7 +72,7 @@
                         <li><a href="{{ url('/months') }}">Meses</a></li>
                         <li><a href="{{ url('/units') }}">Unidades de medida</a></li>
                         <li><a href="{{ url('/trakingStatus') }}">Estados de seguimiento</a></li>
-                        <li><a href="{{ url('/financings') }}">Financiamientos</a></li>
+                        {{-- <li><a href="{{ url('/financings') }}">Financiamientos</a></li> --}}
                         <li><a href="{{ url('/periods') }}">Períodos</a></li>
                         <li><a href="{{ url('/years') }}">Años</a></li>
                         <li><a href="{{ url('/institutions') }}">Instituciones</a></li>
@@ -80,8 +80,8 @@
                         <li><a href="{{ url('/organizationalUnits') }}">Unidades organizativas</a></li>
                         <li><a href="{{ url('/users') }}">Usuarios</a></li>
                         <li><a href="{{ url('/indicators') }}">Indicadores</a></li>
-                        <li><a href="{{ url('/poaClosings') }}">Cierre POA</a></li>
-                        <li><a href="{{ url('/monthlyClosings') }}">Cierres mensuales</a></li>
+                        {{-- <li><a href="{{ url('/poaClosings') }}">Cierre POA</a></li>
+                        <li><a href="{{ url('/monthlyClosings') }}">Cierres mensuales</a></li> --}}
                         <!--<li><a href="{{ url('/annualResults') }}">Resultados anuales</a></li>-->
                         @endrole
 
@@ -270,31 +270,26 @@
                 <!-- Ejes transversales -->
                 @endif
 
-                @role('Administrador|Auditor|Enlace')
+                @role('Administrador|Auditor')
                 <!-- Reportes -->
                 <li>
-                    <div class="icon-link">
-                        <a href="#" class="mb-1">
+                    <a href="{{ url('/reportsCuscatlan') }}" class="mb-1">
+                        <div class="icon-link">
                             <i class="material-icons md-19">description</i>
-                        </a>
-                        <p class="link">Reportes</p>
-                    </div>
-                    <ul class="sub-menu">
+                            <p class="link">Reportes</p>
+                        </div>
+                    </a>
+                    {{-- <ul class="sub-menu">
                         @role('Administrador|Auditor')
-                        {{-- <li><a href="{{ url('/programmaticObjective') }}">Mensuales</a></li> --}}
-                        <li><a href="{{ url('/reports') }}">Mensuales</a></li>
-                        <li><a href="{{ url('/reports') }}">Acumulados</a></li>
+                        <li><a href="{{ url('/reports') }}">Reporte</a></li>
                         @endrole
-                        @role('Enlace')
-                        <li><a href="{{ url('/municipalities') }}">Seguimientos</a></li>
-                        @endrole
-                    </ul>
+                    </ul> --}}
                 </li>
                 @endrole
                 <!-- Reportes -->
 
-                @if (auth()->user()->hasRole('Administrador'))
                 <!-- Gráficos -->
+                {{-- @if (auth()->user()->hasRole('Administrador'))
                 <li>
                     <a href="{{ url('/graphicsCuscatlan') }}" class="mb-1">
                         <div class="icon-link">
@@ -303,8 +298,8 @@
                         </div>
                     </a>
                 </li>
+                @endif --}}
                 <!-- Gráficos -->
-                @endif
                 <!-- Logout -->
                 {{-- <li class="text-center pb-1">
                     <a href="{{ route('register') }}" class="text-center"

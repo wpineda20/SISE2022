@@ -11,9 +11,24 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="start" cols="12" md="6" sm="12">
+          <v-btn href="/resultsCuscatlan" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+        <v-col align="end" cols="12" md="6" sm="12">
+          <v-btn href="/trackingCuscatlan" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="action_description"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -21,11 +36,11 @@
         <v-toolbar flat>
           <v-toolbar-title>Acciones</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded @click="openModal">
+                  <v-btn class="mb-2 btn-normal" rounded :disabled="loading != false" @click="openModal">
                     Agregar
                   </v-btn>
                 </v-col>
@@ -67,21 +82,10 @@
                         validationTextType="default"
                         :min="1"
                         :max="500"
-                        :rows="3"
+                        :rows="6"
                       />
                     </v-col>
                     <!-- Description Acciones-->
-
-                    <!-- Executed -->
-                    <!--
-                    <v-col cols="12" sm="6" md="6" class="pt-0">
-                      <v-checkbox
-                        v-model="$v.editedItem.executed.$model"
-                        label="Ejecutado"
-                      ></v-checkbox>
-                    </v-col>
-                    -->
-                    <!-- Executed-->
 
                     <!-- Responsable -->
                     <v-col cols="12" sm="12" md="12">
@@ -115,17 +119,6 @@
                       />
                     </v-col>
                     <!-- Data Source -->
-
-                    <!--Measure Unit -->
-                    <!-- <v-col cols="12" sm="12" md="6">
-                      <base-input
-                        label="Unidad de medida"
-                        v-model="$v.editedItem.measure_unit.$model"
-                        :validation="$v.editedItem.measure_unit"
-                        validationTextType="default"
-                      />
-                    </v-col> -->
-                    <!-- Measure Unit -->
 
                     <!-- Unit -->
                     <v-col cols="12" sm="6" md="6">
@@ -294,28 +287,18 @@
 <script>
 import Validations from "./Validations";
 import Methods from "./methods";
-// import moment from "moment";
 
 export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "RESULTADO", value: "result_description" },
       { text: "ACCIÓN", value: "action_description" },
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
       { text: "AÑO", value: "year_name" },
-      //{ text: "NO. DE ACCIONES ANUALES", value: "annual_actions"},
-      //{ text: "EJECUTADO", value: "executed" },
-      //{ text: "RESPONSABLE", value: "responsable_name" },
-      //{ text: "METODO DE VERIFICACIÓN", value: "verification_method" },
-      //{ text: "FUENTE DE DATOS", value: "data_source" },
-      //{ text: "UNIDAD DE MEDIDA", value: "measure_unit" },
-      //{ text: "PRESUPUESTO EJECUTADO", value: "budget_executed" },
-      //{ text: "USUARIO", value: "user_name" },
-      //{ text: "MES", value: "month_name" },
-      //{ text: "AÑO", value: "year_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
     records: [],
@@ -327,13 +310,10 @@ export default {
       responsable_name: "",
       verification_method: "",
       data_source: "",
-      measure_unit: "",
       budget_executed: 0,
       user_name: "",
       result_description: "",
       unit_name: "",
-      //year_name: "",
-      //executed: false,
       months: [],
     },
     defaultItem: {
@@ -342,13 +322,10 @@ export default {
       responsable_name: "",
       verification_method: "",
       data_source: "",
-      measure_unit: "",
       budget_executed: 0,
       user_name: "",
       result_description: "",
       unit_name: "",
-      //year_name: "",
-      //executed: false,
       months: [],
     },
 
@@ -358,8 +335,6 @@ export default {
     users: [],
     units: [],
     resultsCusca: [],
-
-    //years: [],
     redirectSessionFinished: false,
     actualUser: {},
     validation: {

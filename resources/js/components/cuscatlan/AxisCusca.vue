@@ -11,8 +11,18 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="end" cols="12" md="12" sm="12">
+          <v-btn href="/programmaticObjective" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
+      :loading="loading"
       :items="recordsFiltered"
       sort-by="axis_description"
       class="elevation-3 shadow p-3 mt-3"
@@ -25,7 +35,12 @@
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded @click="openModal">
+                  <v-btn
+                    class="mb-2 btn-normal"
+                    rounded
+                    :disabled="loading != false"
+                    @click="openModal"
+                  >
                     Agregar
                   </v-btn>
                 </v-col>
@@ -185,6 +200,11 @@
         </a>
       </template>
     </v-data-table>
+    <!-- <v-row class="card-rounded">
+      <v-col cols="12" xs="12" align="center">
+        <loader />
+      </v-col>
+    </v-row> -->
   </div>
 </template>
 
@@ -199,11 +219,11 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "EJE", value: "axis_description" },
       { text: "INSTITUCION", value: "institution_name" },
-      /*{ text: "EJECUTADO", value: "executed" },*/
       { text: "USUARIO", value: "user_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
@@ -214,13 +234,11 @@ export default {
       user_name: "",
       institution_name: "",
       axis_description: "",
-      //executed: false,
     },
     defaultItem: {
       user_name: "",
       institution_name: "",
       axis_description: "",
-      //executed: false,
     },
     textAlert: "",
     alertEvent: "success",
@@ -247,9 +265,6 @@ export default {
         required,
         minLength: minLength(1),
       },
-      /*executed: {
-        required,
-      },*/
     },
   },
   // Validations
@@ -274,6 +289,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -303,6 +319,7 @@ export default {
 
         this.editedItem.user_name = this.actualUser.user_name;
       }
+      this.loading = false;
     },
 
     editItem(item) {
@@ -310,9 +327,6 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editedItem.user_name = item.user_name;
-
-      /*this.editedItem.executed =
-      this.editedItem.executed == "SI" ? true : false;*/
       this.editedItem.institution_name = item.institution_name;
     },
 
@@ -445,10 +459,8 @@ export default {
 
     openModal() {
       this.dialog = true;
-      //this.editedItem.user_name = this.users[0].user_name;
-      this.editedItem.institution_name = "";
+      this.editedItem.institution_name = this.institutions[0].institution_name;
       this.editedItem.axis_description = "";
-      //this.editedItem.executed = false;
       this.editedItem.user_name = this.actualUser.user_name;
     },
   },

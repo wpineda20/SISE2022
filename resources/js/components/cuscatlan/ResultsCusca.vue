@@ -11,9 +11,24 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="start" cols="12" md="6" sm="12">
+          <v-btn href="/strategyCusca" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+        <v-col align="end" cols="12" md="6" sm="12">
+          <v-btn href="/actionsCuscatlan" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="result_description"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -21,11 +36,16 @@
         <v-toolbar flat>
           <v-toolbar-title>Resultados</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" @click="openModal" rounded>
+                  <v-btn
+                    class="mb-2 btn-normal"
+                    :disabled="loading != false"
+                    @click="openModal"
+                    rounded
+                  >
                     Agregar
                   </v-btn>
                 </v-col>
@@ -68,7 +88,7 @@
                         validationTextType="none"
                         :min="1"
                         :max="500"
-                        :rows="3"
+                        :rows="6"
                       />
                     </v-col>
                     <!-- Result -->
@@ -84,17 +104,6 @@
                       />
                     </v-col>
                     <!-- Unit -->
-
-                    <!-- Mesure Unit -->
-                    <!-- <v-col cols="12" sm="6" md="6">
-                      <base-input
-                        label="Unidad de medida"
-                        v-model="$v.editedItem.measure_unit.$model"
-                        :validation="$v.editedItem.measure_unit"
-                        validationTextType="none"
-                      />
-                    </v-col> -->
-                    <!-- Mesure Unit -->
 
                     <!-- Year Goal -->
                     <v-col cols="12" sm="6" md="6">
@@ -267,15 +276,14 @@ export default {
     search: "",
     dialog: false,
     dialogDelete: false,
+    loading: false,
     headers: [
       { text: "RESULTADO", value: "result_description" },
-      // { text: "UNIDAD DE MEDIDA", value: "measure_unit" },
-      { text: "UNIDAD DE MEDIDA", value: "unit_name" },
+      { text: "UD. DE MEDIDA", value: "unit_name" },
       { text: "METAS AL AÑO", value: "year_goal" },
-      //{ text: "EJECUTADO", value: "executed" },
       { text: "USUARIO", value: "user_name" },
       { text: "INDICADOR", value: "indicator_name" },
-      { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
+      { text: "UD. ORGANIZATIVA", value: "ou_name" },
       { text: "AÑO", value: "year_name" },
       { text: "PERIODO", value: "period_name" },
       { text: "ESTRATEGIA", value: "description_strategy" },
@@ -286,12 +294,9 @@ export default {
     editedIndex: -1,
     editedItem: {
       result_description: "",
-      measure_unit: "",
       unit_name: "",
       year_goal: "",
-      //executed: false,
       user_name: "",
-      // axis_description: "",
       indicator_name: "",
       ou_name: "",
       period_name: "",
@@ -300,12 +305,9 @@ export default {
     },
     defaultItem: {
       result_description: "",
-      measure_unit: "",
       unit_name: "",
       year_goal: "",
-      //executed: false,
       user_name: "",
-      //axis_description: "",
       indicator_name: "",
       ou_name: "",
       period_name: "",
@@ -317,7 +319,6 @@ export default {
     alertEvent: "success",
     showAlert: false,
     users: [],
-    //axisCuscas: [],
     units: [],
     indicators: [],
     organizationalUnits: [],
@@ -336,21 +337,11 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
-      // measure_unit: {
-      //   required,
-      //   minLength: minLength(1),
-      //   maxLength: maxLength(150),
-      // },
       year_goal: {
         required,
         minLength: minLength(1),
         maxLength: maxLength(10),
       },
-      /*executed: {
-        required,
-        minLength: minLength(1),
-        maxLength: maxLength(10),
-      },*/
       user_name: {
         required,
       },
@@ -396,6 +387,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -420,7 +412,6 @@ export default {
         );
       });
 
-      // console.log(responses);
       if (responses && responses[0].data.message == "success") {
         this.records = responses[0].data.resultsCusca;
         this.users = responses[1].data.users;
@@ -434,6 +425,7 @@ export default {
 
         this.recordsFiltered = this.records;
       }
+      this.loading = false;
     },
 
     editItem(item) {
@@ -580,18 +572,15 @@ export default {
 
     openModal() {
       this.dialog = true;
-      this.editedItem.user_name = this.actualUser.user_name;
-      this.editedItem.indicator_name = this.indicators[0].indicator_name;
-      this.editedItem.period_name = this.periods[0].period_name;
-      this.editedItem.year_name = new Date().getFullYear();
-      this.editedItem.ou_name = this.organizationalUnits[0].ou_name;
-      this.editedItem.description_strategy =
-        this.strategys[0].description_strategy;
-      //this.editedItem.executed = false;
       this.editedItem.result_description = "";
-      this.editedItem.measure_unit = "";
       this.editedItem.unit_name = this.units[0].unit_name;
       this.editedItem.year_goal = 0;
+      this.editedItem.indicator_name = this.indicators[0].indicator_name;
+      this.editedItem.user_name = this.actualUser.user_name;
+      this.editedItem.ou_name = this.organizationalUnits[0].ou_name;
+      this.editedItem.year_name = new Date().getFullYear();
+      this.editedItem.period_name = this.periods[0].period_name;
+      this.editedItem.description_strategy = this.strategys[0].description_strategy;
     },
   },
 };

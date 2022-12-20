@@ -49,19 +49,24 @@ class ActionsCuscaController extends Controller
             ->join('units as un', 'actions_cusca.unit_id', '=', 'un.id')
             ->get();
 
+
         $months = Month::all();
         foreach ($actionsCusca as $key => $action) {
             $action->months = $months;
 
+            // dd($action);
             foreach ($action->months as $key => $month) {
-                $monthInAction = TrakingCuscaMonthYearAction::where([
-                    'actions_cusca_id' => $action->id,
-                    'month_id' => $month->id
-                ])->first();
+                $monthInAction = TrakingCuscaMonthYearAction::where(
+                    [
+                        'actions_cusca_id' => $action->id,
+                        'month_id' => $month->id
+                    ]
+                )->first();
 
                 $month->value = (!is_null($monthInAction)) ? true : false;
             }
         }
+        dd($actionsCusca->toArray());
 
         $actionsCusca = EncryptController::encryptArray($actionsCusca, [
             'id', 'user_id', 'unit_id',
@@ -79,6 +84,7 @@ class ActionsCuscaController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $actionsCusca = ActionsCusca::create([
             'action_description' => $request->action_description,
             'annual_actions' => $request->annual_actions,
@@ -95,7 +101,7 @@ class ActionsCuscaController extends Controller
         ]);
 
         foreach ($request->months as $month) {
-            //dd($month['value']);
+            // dd($month['value']);
             if ($month['value']) {
                 TrakingCuscaMonthYearAction::create([
                     'actions_cusca_id' => $actionsCusca->id,
