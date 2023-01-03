@@ -216,8 +216,8 @@
                     <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Número de acciones"
-                        v-model.trim="$v.editedItem.annual_actions.$model"
-                        :validation="$v.editedItem.annual_actions"
+                        v-model.trim="$v.editedItem.number_actions.$model"
+                        :validation="$v.editedItem.number_actions"
                         v-mask="'####'"
                         type="number"
                         :min="2000"
@@ -423,7 +423,7 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
-    loading:false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
@@ -445,27 +445,19 @@ export default {
     editedIndex: -1,
     editedItem: {
       tracking_detail: "",
-      //action_description: "",
-      //month_name: "",
       budget_executed: 0,
       user_name: "",
-      //year_name: "",
       status_name: "",
-      //monthly_actions: 0,
       executed: false,
       observation: "",
       reply: "",
-      annual_actions: 0,
+      number_actions: 0,
     },
     defaultItem: {
       tracking_detail: "",
-      //action_description: "",
-      //month_name: "",
       budget_executed: 0,
       user_name: "",
-      //year_name: "",
       status_name: "",
-      //monthly_actions: 0,
       executed: false,
       observation: "",
       reply: "",
@@ -475,11 +467,7 @@ export default {
     alertEvent: "success",
     showAlert: false,
     users: [],
-    //months: [],
-    //years: [],
-    //actions: [],
     trakingStatuses: [],
-    //observations: [],
 
     redirectSessionFinished: false,
     filter: "Mensuales",
@@ -497,7 +485,7 @@ export default {
         maxLength: maxLength(500),
       },
 
-      annual_actions: {
+      number_actions: {
         required,
         minLength: minLength(1),
         maxLength: maxLength(10),
@@ -511,15 +499,6 @@ export default {
         //required,
         minLength: minLength(1),
       },
-      //   month_name: {
-      //     required,
-      //   },
-      //   year_name: {
-      //     required,
-      //   },
-      //   action_description: {
-      //     required,
-      //   },
       status_name: {
         required,
         minLength: minLength(1),
@@ -617,6 +596,7 @@ export default {
       //this.editedItem.month_name = this.editedItem.month_name;
       //this.editedItem.action_description = this.editedItem.action_description;
       this.editedItem.tracking_detail = this.editedItem.tracking_detail;
+      this.editedItem.number_actions = this.editedItem.number_actions;
       this.editedItem.observation = this.editedItem.observation;
       this.editedItem.executed =
         this.editedItem.executed == "SI" ? true : false;
@@ -774,7 +754,7 @@ export default {
       this.editedItem.observation = "";
       this.editedItem.reply = "";
       this.editedItem.budget_executed = 0;
-      this.editedItem.annual_actions = 0;
+      this.editedItem.number_actions = 0;
       this.editedItem.executed = false;
     },
 

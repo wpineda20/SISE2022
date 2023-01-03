@@ -198,7 +198,8 @@ export default {
         this.editedItem.user_name = this.actualUser.user_name;
         this.editedItem.action_description = "";
         this.editedItem.responsable_name = "";
-        this.editedItem.annual_actions = 0;
+        // this.editedItem.annual_actions = 0;
+        this.editedItem.year_goal_actions = 0;
         this.editedItem.budget_executed = 0;
         this.editedItem.verification_method = "";
         this.editedItem.data_source = "";

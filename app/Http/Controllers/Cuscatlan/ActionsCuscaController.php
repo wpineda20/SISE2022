@@ -25,26 +25,23 @@ class ActionsCuscaController extends Controller
     {
         $actionsCusca = ActionsCusca::select(
             'action_description',
-            'annual_actions',
-            //'actions_cusca.executed',
+            // 'annual_actions',
+            'year_goal_actions',
             'responsable_name',
             'verification_method',
             'data_source',
-            // 'actions_cusca.measure_unit',
-            'un.unit_name',
             'budget_executed',
+            'un.unit_name',
             'user_name',
             'result_description',
             'rs.*',
             'ou.ou_name',
-            //'m.*',
             'y.year_name',
             'actions_cusca.id as id',
         )
             ->join('users as u', 'actions_cusca.user_id', '=', 'u.id')
             ->join('results_cusca as rs', 'actions_cusca.results_cusca_id', '=', 'rs.id')
             ->join('organizational_units as ou', 'rs.organizational_units_id', '=', 'ou.id')
-            //->join('months as m', 'rs.month_id', '=', 'm.id')
             ->join('years as y', 'rs.year_id', '=', 'y.id')
             ->join('units as un', 'actions_cusca.unit_id', '=', 'un.id')
             ->get();
@@ -66,7 +63,7 @@ class ActionsCuscaController extends Controller
                 $month->value = (!is_null($monthInAction)) ? true : false;
             }
         }
-        dd($actionsCusca->toArray());
+        // dd($actionsCusca->toArray());
 
         $actionsCusca = EncryptController::encryptArray($actionsCusca, [
             'id', 'user_id', 'unit_id',
@@ -87,12 +84,11 @@ class ActionsCuscaController extends Controller
         // dd($request);
         $actionsCusca = ActionsCusca::create([
             'action_description' => $request->action_description,
-            'annual_actions' => $request->annual_actions,
-            //'executed' => ($request->executed)?'SI':'NO',
+            // 'annual_actions' => $request->annual_actions,
+            'year_goal_actions' => $request->year_goal_actions,
             'responsable_name' => $request->responsable_name,
             'verification_method' => $request->verification_method,
             'data_source' => $request->data_source,
-            // 'measure_unit' => $request->measure_unit,
             'budget_executed' => $request->budget_executed,
             'created_user_id' => auth()->user()->id,
             'user_id' => User::where('user_name', $request->user_name)->first()->id,

@@ -19,17 +19,14 @@ class ActionsCusca extends Model
     protected $fillable = [
         'id',
         'action_description',
-        'annual_actions',
-        //'executed',
+        'year_goal_actions',
         'responsable_name',
         'verification_method',
         'data_source',
-        // 'measure_unit',
         'budget_executed',
         'created_user_id',
         'user_id',
         'results_cusca_id',
-        //'month_id',
         'unit_id'
     ];
     public $hidden = [

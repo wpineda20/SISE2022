@@ -28,9 +28,6 @@ class ResultsCuscaController extends Controller
         $resultsCusca = ResultsCusca::select(
             'results_cusca.id',
             'result_description',
-            // 'measure_unit',
-            'year_goal',
-            //'results_cusca.executed',
             'user_name',
             'indicator_name',
             'ou_name',

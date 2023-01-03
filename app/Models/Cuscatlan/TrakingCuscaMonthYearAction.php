@@ -18,13 +18,13 @@ class TrakingCuscaMonthYearAction extends Model
 
     protected $fillable = [
         'id',
-        //'tracking_cusca_id',
         'actions_cusca_id',
         'year_id',
         'month_id',
         'traking_status_id',
-        'tracking_detail',
         'executed',
+        'tracking_detail',
+        'number_actions',
         'observation',
         'reply',
 

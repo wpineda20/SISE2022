@@ -155,6 +155,8 @@ Route::group(['middleware'=> ['auth', 'verified']], function () {
         Route::get('/graphicsCuscatlan', function () {
             return view('cuscatlan.graphics_cusca.index');
         });
+
+        Route::get('api/pdf', [PDFController::class, 'generatePDF']);
     });
 
     Route::group(['middleware'=> ['has.role:Administrador,Enlace,Auditor']], function () {

@@ -68,7 +68,7 @@
                     </div>
                     <ul class="sub-menu">
                         @role('Administrador')
-                        {{-- // if your login user role is admin show the content here --}}
+                        {{-- if your login user role is admin show the content here
                         <li><a href="{{ url('/months') }}">Meses</a></li>
                         <li><a href="{{ url('/units') }}">Unidades de medida</a></li>
                         <li><a href="{{ url('/trakingStatus') }}">Estados de seguimiento</a></li>
@@ -80,8 +80,8 @@
                         <li><a href="{{ url('/organizationalUnits') }}">Unidades organizativas</a></li>
                         <li><a href="{{ url('/users') }}">Usuarios</a></li>
                         <li><a href="{{ url('/indicators') }}">Indicadores</a></li>
-                        {{-- <li><a href="{{ url('/poaClosings') }}">Cierre POA</a></li>
-                        <li><a href="{{ url('/monthlyClosings') }}">Cierres mensuales</a></li> --}}
+                        <li><a href="{{ url('/poaClosings') }}">Cierre POA</a></li>
+                        <li><a href="{{ url('/monthlyClosings') }}">Cierres mensuales</a></li>
                         <!--<li><a href="{{ url('/annualResults') }}">Resultados anuales</a></li>-->
                         @endrole
 

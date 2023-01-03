@@ -93,6 +93,31 @@
                     </v-col>
                     <!-- Result -->
 
+                    <!-- Year Goal -->
+                    <!-- <v-col cols="12" sm="6" md="6">
+                      <base-input
+                        label="Número de metas al año"
+                        v-model.trim="$v.editedItem.year_goal.$model"
+                        :validation="$v.editedItem.year_goal"
+                        v-mask="'####'"
+                        type="number"
+                        :readonly="false"
+                      />
+                    </v-col> -->
+                    <!-- Year Goal -->
+
+                    <!-- Indicator -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-select-search
+                        label="Indicador"
+                        v-model.trim="$v.editedItem.indicator_name.$model"
+                        :items="indicators"
+                        item="indicator_name"
+                        :validation="$v.editedItem.indicator_name"
+                      />
+                    </v-col>
+                    <!-- Indicator -->
+
                     <!-- Unit -->
                     <v-col cols="12" sm="6" md="6">
                       <base-select-search
@@ -105,31 +130,6 @@
                     </v-col>
                     <!-- Unit -->
 
-                    <!-- Year Goal -->
-                    <v-col cols="12" sm="6" md="6">
-                      <base-input
-                        label="Número de metas al año"
-                        v-model.trim="$v.editedItem.year_goal.$model"
-                        :validation="$v.editedItem.year_goal"
-                        v-mask="'####'"
-                        type="number"
-                        :readonly="false"
-                      />
-                    </v-col>
-                    <!-- Year Goal -->
-
-                    <!-- Indicator -->
-                    <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Indicador"
-                        v-model.trim="$v.editedItem.indicator_name.$model"
-                        :items="indicators"
-                        item="indicator_name"
-                        :validation="$v.editedItem.indicator_name"
-                      />
-                    </v-col>
-                    <!-- Indicator -->
-
                     <!-- Users -->
                     <v-col cols="12" sm="6" md="6">
                       <base-select
@@ -138,6 +138,7 @@
                         :items="users"
                         item="user_name"
                         :validation="$v.editedItem.user_name"
+                        :readonly="true"
                       />
                     </v-col>
                     <!-- Users -->
@@ -280,7 +281,7 @@ export default {
     headers: [
       { text: "RESULTADO", value: "result_description" },
       { text: "UD. DE MEDIDA", value: "unit_name" },
-      { text: "METAS AL AÑO", value: "year_goal" },
+      // { text: "METAS AL AÑO", value: "year_goal" },
       { text: "USUARIO", value: "user_name" },
       { text: "INDICADOR", value: "indicator_name" },
       { text: "UD. ORGANIZATIVA", value: "ou_name" },
@@ -295,7 +296,7 @@ export default {
     editedItem: {
       result_description: "",
       unit_name: "",
-      year_goal: "",
+      // year_goal: "",
       user_name: "",
       indicator_name: "",
       ou_name: "",
@@ -306,7 +307,7 @@ export default {
     defaultItem: {
       result_description: "",
       unit_name: "",
-      year_goal: "",
+      // year_goal: "",
       user_name: "",
       indicator_name: "",
       ou_name: "",
@@ -337,11 +338,11 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
-      year_goal: {
-        required,
-        minLength: minLength(1),
-        maxLength: maxLength(10),
-      },
+      // year_goal: {
+      //   required,
+      //   minLength: minLength(1),
+      //   maxLength: maxLength(10),
+      // },
       user_name: {
         required,
       },
@@ -574,13 +575,14 @@ export default {
       this.dialog = true;
       this.editedItem.result_description = "";
       this.editedItem.unit_name = this.units[0].unit_name;
-      this.editedItem.year_goal = 0;
+      // this.editedItem.year_goal = 0;
       this.editedItem.indicator_name = this.indicators[0].indicator_name;
       this.editedItem.user_name = this.actualUser.user_name;
       this.editedItem.ou_name = this.organizationalUnits[0].ou_name;
       this.editedItem.year_name = new Date().getFullYear();
       this.editedItem.period_name = this.periods[0].period_name;
-      this.editedItem.description_strategy = this.strategys[0].description_strategy;
+      this.editedItem.description_strategy =
+        this.strategys[0].description_strategy;
     },
   },
 };

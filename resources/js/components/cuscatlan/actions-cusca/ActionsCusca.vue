@@ -40,7 +40,12 @@
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded :disabled="loading != false" @click="openModal">
+                  <v-btn
+                    class="mb-2 btn-normal"
+                    rounded
+                    :disabled="loading != false"
+                    @click="openModal"
+                  >
                     Agregar
                   </v-btn>
                 </v-col>
@@ -87,6 +92,43 @@
                     </v-col>
                     <!-- Description Acciones-->
 
+                    <!-- Results -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-select-search
+                        label="Resultado"
+                        v-model="$v.editedItem.result_description.$model"
+                        :items="resultsCusca"
+                        item="result_description"
+                        :validation="$v.editedItem.result_description"
+                      />
+                    </v-col>
+                    <!-- Results -->
+
+                    <!-- Unit -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Unidad de medida"
+                        v-model.trim="$v.editedItem.unit_name.$model"
+                        :items="units"
+                        item="unit_name"
+                        :validation="$v.editedItem.unit_name"
+                      />
+                    </v-col>
+                    <!-- Unit -->
+
+                    <!-- Users -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Enlace"
+                        v-model.trim="$v.editedItem.user_name.$model"
+                        :validation="$v.editedItem.user_name"
+                        :items="users"
+                        item="user_name"
+                      />
+                    </v-col>
+                    <!-- :readonly="true" -->
+                    <!-- Users -->
+
                     <!-- Responsable -->
                     <v-col cols="12" sm="12" md="12">
                       <base-input
@@ -110,7 +152,7 @@
                     <!-- Verification Method -->
 
                     <!-- Data Source -->
-                    <v-col cols="12" sm="12" md="12">
+                    <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Fuente de datos"
                         v-model="$v.editedItem.data_source.$model"
@@ -119,18 +161,6 @@
                       />
                     </v-col>
                     <!-- Data Source -->
-
-                    <!-- Unit -->
-                    <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Unidad de medida"
-                        v-model.trim="$v.editedItem.unit_name.$model"
-                        :items="units"
-                        item="unit_name"
-                        :validation="$v.editedItem.unit_name"
-                      />
-                    </v-col>
-                    <!-- Unit -->
 
                     <!-- Bubget executed -->
                     <v-col cols="12" sm="12" md="6">
@@ -143,32 +173,20 @@
                     </v-col>
                     <!-- Bubget executed -->
 
-                    <!-- Results -->
-                    <v-col cols="12" sm="12" md="12">
-                      <base-select-search
-                        label="Resultado"
-                        v-model="$v.editedItem.result_description.$model"
-                        :items="resultsCusca"
-                        item="result_description"
-                        :validation="$v.editedItem.result_description"
-                      />
-                    </v-col>
-                    <!-- Results -->
-                    <!-- Users -->
+                    <!-- Year Goal Actions -->
                     <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Enlace"
-                        v-model.trim="$v.editedItem.user_name.$model"
-                        :validation="$v.editedItem.user_name"
-                        :items="users"
-                        item="user_name"
+                      <base-input
+                        label="Meta de actividades anuales"
+                        v-model.trim="$v.editedItem.year_goal_actions.$model"
+                        :validation="$v.editedItem.year_goal_actions"
+                        v-mask="'####'"
+                        type="number"
                       />
                     </v-col>
-                    <!-- :readonly="true" -->
-                    <!-- Users -->
+                    <!-- Year Goal Actions -->
 
                     <!-- Annual Actions -->
-                    <v-col cols="12" sm="6" md="6">
+                    <!-- <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Número de acciones"
                         v-model.trim="$v.editedItem.annual_actions.$model"
@@ -178,7 +196,7 @@
                         :min="2000"
                         :max="2050"
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Annual Actions -->
 
                     <!-- Meses -->
@@ -297,7 +315,9 @@ export default {
     headers: [
       { text: "RESULTADO", value: "result_description" },
       { text: "ACCIÓN", value: "action_description" },
-      { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
+      { text: "UD. ORGANIZATIVA", value: "ou_name" },
+      { text: "META DE ACCIONES ANUALES", value: "year_goal_actions" },
+      // { text: "NO. DE ACCIONES", value: "annual_actions" },
       { text: "AÑO", value: "year_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
@@ -306,7 +326,8 @@ export default {
     editedIndex: -1,
     editedItem: {
       action_description: "",
-      annual_actions: 0,
+      // annual_actions: 0,
+      year_goal_actions: 0,
       responsable_name: "",
       verification_method: "",
       data_source: "",
@@ -318,7 +339,8 @@ export default {
     },
     defaultItem: {
       action_description: "",
-      annual_actions: 0,
+      // annual_actions: 0,
+      year_goal_actions: 0,
       responsable_name: "",
       verification_method: "",
       data_source: "",
