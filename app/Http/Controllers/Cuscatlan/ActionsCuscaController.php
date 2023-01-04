@@ -97,7 +97,6 @@ class ActionsCuscaController extends Controller
         ]);
 
         foreach ($request->months as $month) {
-            // dd($month['value']);
             if ($month['value']) {
                 TrakingCuscaMonthYearAction::create([
                     'actions_cusca_id' => $actionsCusca->id,
@@ -131,6 +130,14 @@ class ActionsCuscaController extends Controller
      */
     public function update(Request $request)
     {
+
+        // if (!auth()->user()->hasRole('Administrador')) {
+        //     return response()->json([
+        //         'message' => 'reason',
+        //         "error" => "El usuario no posee los permisos suficientes para esta acción."
+        //     ]);
+        // }
+
         $users = User::where('user_name', $request->user_name)->first();
         $units = Unit::where('unit_name', $request->unit_name)->first();
 
@@ -144,7 +151,7 @@ class ActionsCuscaController extends Controller
 
         ActionsCusca::where('id', $data['id'])->update($data);
 
-        // Inserting tracing actions
+        // Inserting tracking actions
         // Only deleting the status haven't been modified
         TrakingCuscaMonthYearAction::where([
             'actions_cusca_id' => $data['id'],
@@ -156,7 +163,7 @@ class ActionsCuscaController extends Controller
             $year = Year::where('year_name', $request->year_name)->first();
 
             if ($actionMonth['value']) {
-                // Creating tracing actions
+                // Creating tracking actions
                 TrakingCuscaMonthYearAction::updateOrCreate([
                     'actions_cusca_id' => $data['id'],
                     'month_id' => $month->id,

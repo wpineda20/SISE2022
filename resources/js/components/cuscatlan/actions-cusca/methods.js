@@ -118,7 +118,7 @@ export default {
                 .catch((error) => {
                     this.updateAlert(
                         true,
-                        "No fue posible crear el registro.",
+                        "No fue posible actualizar el registro.",
                         "fail"
                     );
                     this.close();
@@ -133,6 +133,13 @@ export default {
                     true,
                     "Registro actualizado correctamente.",
                     "success"
+                );
+            }
+            if (res.data.message == "reason") {
+                this.updateAlert(
+                    true,
+                    "El usuario no posee los permisos suficientes para esta acción.",
+                    "reason"
                 );
             }
         } else {

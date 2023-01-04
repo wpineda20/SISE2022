@@ -26,16 +26,6 @@ class IndicatorSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
-            [
-                'id' => 2,
-                'indicator_name' => 'Indicator Dos',
-                'strategic_indicator' => 'NO',
-                'institution_id' => 2,
-                'unit_id' => 2,
-                'organizational_unit_id' => 2,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
         ]);
     }
 }

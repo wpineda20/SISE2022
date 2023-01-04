@@ -261,7 +261,7 @@
                       cols="12"
                       sm="12"
                       md="12"
-                      v-if="role == 'Administrador' || editedItem.observation"
+                      v-if="role == 'Administrador' || role == 'Auditor'"
                     >
                       <base-text-area
                         label="Observación"
@@ -285,9 +285,7 @@
                       cols="12"
                       sm="12"
                       md="12"
-                      v-if="
-                        role == 'Administrador' || editedItem.observation != ''
-                      "
+                      v-if="role == 'Administrador' || role == 'Auditor'"
                     >
                       <base-text-area
                         label="Respuesta"
@@ -407,7 +405,7 @@ import userApi from "../../apis/userApi";
 //import monthApi from "../apis/monthApi";
 import trakingStatusApi from "../../apis/trakingStatusApi";
 //import trackingCuscaApi from "../../apis/trackingCuscaApi";
-import actionsCuscaApi from "../../apis/actionsCuscaApi";
+// import actionsCuscaApi from "../../apis/actionsCuscaApi";
 import roleApi from "../../apis/roleApi";
 import lib from "../../libs/function";
 import {
@@ -556,7 +554,6 @@ export default {
         trakingStatusApi.get(),
         //yearApi.get(),
         //monthApi.get(),
-        //actionsCuscaApi.get(),
         roleApi.get("/user"),
         userApi.post("/actualUser"),
       ];
@@ -567,14 +564,12 @@ export default {
           401
         );
       });
-
       if (responses && responses[0].data.message == "success") {
         this.records = responses[0].data.trackingsCusca;
         this.users = responses[1].data.users;
         this.trakingStatuses = responses[2].data.trakingStatuses;
         //this.years = responses[3].data.years;
         //this.months = responses[4].data.months;
-        //this.actions = responses[4].data.actionsCusca;
         this.role = responses[3].data.roles[0];
         this.actualUser = responses[4].data.user;
 
@@ -676,12 +671,20 @@ export default {
               419
             );
           });
-
+        // console.log(res);
         if (res.data.reason) {
           this.updateAlert(true, res.data.reason, "fail");
         }
 
-        if (res.data.message == "success" && !res.data.reason) {
+        if (res.data.verifyActions) {
+          this.updateAlert(true, res.data.verifyActions, "fail");
+        }
+
+        if (
+          res.data.message == "success" &&
+          !res.data.reason &&
+          !res.data.verifyActions
+        ) {
           this.updateAlert(
             true,
             "Registro actualizado correctamente.",

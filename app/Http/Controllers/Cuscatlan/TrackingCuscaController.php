@@ -25,13 +25,22 @@ class TrackingCuscaController extends Controller
         $roles = RoleController::getAllowedRoles();
         $filters = [];
 
+        // dd($roles);
         if (isset($roles[0])) {
             switch ($roles[0]) {
                 case "Enlace":
+                    // All Trackings of the Specific Enlace
                     $filters = [
-                        'ou.id' => auth()->user()->organizational_units_id,
+                        'ac.user_id' => auth()->user()->id,
                     ];
                     break;
+
+                    // case "Auditor":
+                    //     // All Trackings of the Organizational Unit
+                    //     $filters = [
+                    //         'ou.id' => auth()->user()->organizational_units_id,
+                    //     ];
+                    //     break;
             }
         }
 
@@ -156,8 +165,19 @@ class TrackingCuscaController extends Controller
     public function update(Request $request)
     {
         // Verify if is admin or enlace
-        if (auth()->user()->getRoleNames()[0] != "Administrador" || auth()->user()->getRoleNames()[0] != "Administrador") {
-            return response()->json(["message" => "success", "reason" => "Únicamente un enlace o el administrador puede modificar el registro."]);
+        // if (auth()->user()->getRoleNames()[0] != "Administrador" || auth()->user()->getRoleNames()[0] != "Enlace") {
+        //     return response()->json([
+        //         'message' => 'success',
+        //         "reason" => "Únicamente un enlace o el administrador puede modificar el registro."
+        //     ]);
+        // }
+
+        // Verify if the number of actions is higher than year goal actions
+        if ($request->number_actions > $request->year_goal_actions) {
+            return response()->json([
+                'message' => 'success',
+                "verifyActions" => "El número de acciones no debe ser mayor a la meta de acciones anuales"
+            ]);
         }
 
         $status = TrakingStatus::where('status_name', $request->status_name)->first();
@@ -178,7 +198,6 @@ class TrackingCuscaController extends Controller
                     $action['action_description'],
                 ));
         }
-
 
         $traking->observation = $request->observation ?? "";
         $traking->reply = $request->reply ?? "";
