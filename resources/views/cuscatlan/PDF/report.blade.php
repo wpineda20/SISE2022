@@ -145,13 +145,9 @@
         </thead>
         @php
         $i = 1;
-        // dd($axis);
         @endphp
         <tbody>
             @foreach($axis as $ax)
-            {{-- @php
-            dd($ax)
-            @endphp --}}
             <tr>
                 <td rowspan="1" style=" text-align: center; width: 10%">{{ $i }}</td>
                 <td rowspan="1" style=" text-align: left; width: 60%">{{ $ax->axis_description}}</td>

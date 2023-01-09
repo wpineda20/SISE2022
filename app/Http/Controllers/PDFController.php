@@ -28,7 +28,7 @@ class PDFController extends Controller
         $axis_title = "";
 
         // Report All Axis
-        if ($request->axis_description == "TODOS") {
+        if ($request->axis_description == "GENERAL") {
 
             $axis_title = "Avance por ejes";
 
@@ -80,8 +80,6 @@ class PDFController extends Controller
                 //Calculate Total Avanced Percentage
                 $value->total_advanced_per = $value->sum_number_actions /  $value->sum_year_goals * 100;
             }
-
-            // dd($axis);
 
             $pdf = DomPDF::loadView("cuscatlan.PDF.report", compact("data", "axis", "axis_title"))
                 ->setPaper("a4", "landscape");

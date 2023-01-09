@@ -130,7 +130,7 @@ export default {
 
       if (responses) {
         this.axis = responses[0].data.axisCuscas;
-        this.axis.unshift("TODOS");
+        this.axis.unshift("GENERAL");
       }
 
       this.loading = false;
