@@ -48,6 +48,49 @@
               :validation="$v.parameters.axis_description"
             />
           </v-col>
+          <!-- Axis -->
+
+          <!-- Organizational Units -->
+          <v-col
+            cols="12"
+            sm="12"
+            md="6"
+            offset-md="3"
+            v-if="
+              parameters.reportTypes != 'Reporte acumulado' &&
+              parameters.reportTypes != 'Reporte despacho'
+            "
+          >
+            <base-select
+              label="Unidad/Dirección"
+              v-model.trim="$v.parameters.ou_name.$model"
+              :items="organizationalUnits"
+              item="ou_name"
+              :validation="$v.parameters.ou_name"
+            />
+          </v-col>
+          <!-- Organizational Units -->
+
+          <!-- Month -->
+          <v-col
+            cols="12"
+            sm="12"
+            md="6"
+            offset-md="3"
+            v-if="
+              parameters.reportTypes != 'Reporte acumulado' &&
+              parameters.reportTypes != 'Reporte despacho'
+            "
+          >
+            <base-select-search
+              label="Mes"
+              v-model.trim="$v.parameters.month_name.$model"
+              :items="months"
+              item="month_name"
+              :validation="$v.parameters.month_name"
+            />
+          </v-col>
+          <!-- Month -->
 
           <!-- Generate report -->
           <v-col cols="12" sm="6" md="6" offset-md="3" align="center">
@@ -64,6 +107,8 @@
 
 <script>
 import axisCuscaApi from "../../apis/axisCuscaApi";
+import organizationalUnitApi from "../../apis/organizationalUnitApi";
+import monthApi from "../../apis/monthApi";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import AlertDialog from "../base-components/AlertDialog.vue";
 
@@ -78,9 +123,13 @@ export default {
       ],
       parameters: {
         axis_description: "",
+        ou_name: "",
+        month_name: "",
         reportTypes: "Reporte mensual",
       },
       axis: [],
+      organizationalUnits: [],
+      months: [],
       items: [],
       redirectSessionFinished: false,
       textAlert: "",
@@ -97,6 +146,12 @@ export default {
   validations: {
     parameters: {
       axis_description: {
+        minLength: minLength(1),
+      },
+      ou_name: {
+        minLength: minLength(1),
+      },
+      month_name: {
         minLength: minLength(1),
       },
       reportTypes: {
@@ -122,15 +177,27 @@ export default {
   methods: {
     async initialize() {
       this.loading = true;
-      const requests = [axisCuscaApi.get()];
+      const requests = [
+        axisCuscaApi.get(),
+        organizationalUnitApi.get(),
+        monthApi.get(),
+      ];
 
       const responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "Campos obligatorios.", "fail");
       });
 
+      // console.log(responses);
       if (responses) {
         this.axis = responses[0].data.axisCuscas;
+        this.organizationalUnits = responses[1].data.organizationalUnits;
+        this.months = responses[2].data.months;
+
         this.axis.unshift("GENERAL");
+
+        this.parameters.ou_name = this.organizationalUnits[0].ou_name;
+        this.parameters.month_name =
+          this.months[new Date().getMonth()].month_name;
       }
 
       this.loading = false;
@@ -142,36 +209,41 @@ export default {
         this.updateAlert(true, "Campos obligatorios.", "fail");
         return;
       }
-
       this.reportDialog = true;
-
+      console.log(this.parameters);
       switch (this.parameters.reportTypes) {
         case "Reporte mensual":
-          this.textReportDialog = "Generando reporte";
+          this.textReportDialog = "Generando reporte mensual";
           this.showReport();
           break;
         case "Reporte acumulado":
-          this.textReportDialog = "Generando reporte";
+          this.textReportDialog = "Generando reporte acumulado";
           this.showReport();
           break;
         case "Reporte despacho":
-          this.textReportDialog = "Generando reporte";
+          this.textReportDialog = "Generando reporte despacho";
           this.showReport();
           break;
       }
     },
 
     async showReport() {
-      this.uploadFinished = false;
+      console.log(this.parameters);
       if (this.parameters.reportTypes == "Reporte mensual") {
-        console.log("reporte mensual");
+        window.open(
+          `/pdf/mensual?ou_name=${this.parameters.ou_name}&month_name=${this.parameters.month_name}&reportTypes=${this.parameters.reportTypes}`
+        );
+        this.reportDialog = false;
+        return;
       }
       if (this.parameters.reportTypes == "Reporte acumulado") {
-        console.log("reporte mensual");
+        `/pdf/acumulado?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`;
+        this.reportDialog = false;
+        return;
       }
       if (this.parameters.reportTypes == "Reporte despacho") {
         window.open(
-          `/api/pdf?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`
+          `/pdf/despacho?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`
         );
         this.reportDialog = false;
         return;

@@ -61,8 +61,12 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         //     return view('cuscatlan.graphics_cusca.index');
         // });
 
-        // PDF
-        Route::get('api/pdf', [PDFController::class, 'generatePDF']);
+        // PDF Mensual
+        Route::get('pdf/mensual', [PDFController::class, 'generateMensualPDF']);
+        // PDF Acumulado
+        Route::get('pdf/acumulado', [PDFController::class, 'generateAcumuladoPDF']);
+        // PDF Despacho
+        Route::get('pdf/despacho', [PDFController::class, 'generateDespachoPDF']);
     });
 
     Route::get('/', function () {
