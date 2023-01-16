@@ -86,6 +86,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/trakingStatus', TrakingStatusController::class);
         Route::resource('/api/indicator', IndicatorController::class);
         Route::get('/api/month/tracking', [MonthController::class, 'indexTracking']);
+        Route::post('/api/month/monthsAllowed', [MonthController::class, 'monthsAllowed']);
         // Route::resource('/api/financing', FinancingController::class);
         // Route::resource('/api/poaClosing', PoaClosingController::class);
         // Route::resource('/api/monthlyClosing', MonthlyClosingController::class);

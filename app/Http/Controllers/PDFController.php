@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 //Models
 use App\Models\Cuscatlan\AxisCusca;
+use App\Models\Cuscatlan\ActionsCusca;
 use App\Models\Cuscatlan\Month;
 use App\Models\Cuscatlan\OrganizationalUnit;
 use App\Models\Cuscatlan\Programmatic_Objective;
@@ -32,6 +33,7 @@ class PDFController extends Controller
         set_time_limit(0);
         ini_set("memory_limit", "1024M");
 
+        $project = "PlAN CUSCATLAN";
         $currentYear = date("Y");
 
         //Create new PDF
@@ -42,8 +44,23 @@ class PDFController extends Controller
         $pdf->setPrintFooter(false);
         $pdf->setCellPaddings(0, 0, 0, 0);
 
-        $pdf->setSourceFile(public_path("ejecutivo.pdf"));
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(true, 8);
+
+        $pdf->setSourceFile(public_path("ejecutivo_s.pdf"));
         $pdf->AddPage();
+
+        // Set custom opacity
+        $pdf->SetAlpha(0.1);
+        //Path
+        $img_file = public_path("Escudo_D.png");
+        //Render the image
+        $pdf->Image($img_file, 192, 115, 165, 165, '', '', '', false, 200, '', false, false, 0);
+        // restore full opacity
+        $pdf->SetAlpha(1);
+
+        // set the starting point for the page content (z-index)
+        $pdf->setPageMark();
 
         // First page
         $tplIdx = $pdf->importPage(1);
@@ -52,87 +69,136 @@ class PDFController extends Controller
 
         // Titles first page
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->setXY(73, 30);
+        $pdf->setXY(73, 25);
         $pdf->setFontSize(13);
         $pdf->writeHTML("<b>Dirección General de Planificación y Desarrollo Institucional</b>");
 
-        $pdf->setXY(93, 37);
+        $pdf->setXY(93, 32);
         $pdf->setFontSize(13);
         $pdf->writeHTML("<b>Reporte de Seguimiento Mensual Año $currentYear</b>");
 
         $pdf->setFontSize(12);
-        // $pdf->setXY(10, 48);
-        // $pdf->writeHTML("<b>Unidad/Dirección:</b>");
-        $pdf->setY(48);
+        $pdf->setY(42);
         $pdf->Write(1, "$request->ou_name", '', '', 'C');
-        // $pdf->setXY(10, 55);
-        // $pdf->writeHTML("<b>Mes:</b>");
-        $pdf->setY(55);
+        $pdf->setY(48);
         $pdf->Write(1, "$request->month_name", '', '', 'C');
 
-        $pdf->setY(65);
+        $pdf->setY(60);
         $axis = AxisCusca::select(
             '*',
             'po.*',
             'sc.*',
             'rc.*',
             'rc.id as results_id',
-            // 'act.id as actions_id',
-            // 'act.action_description',
-            // 'act.year_goal_actions',
             'y.year_name',
         )
             ->join('programmatic_objectives as po', 'po.axis_cusca_id', '=', 'axis_cusca.id', 'left outer')
             ->join('strategy_cusca as sc', 'sc.programmatic_objectives_id', '=', 'po.id', 'left outer')
             ->join('results_cusca as rc', 'rc.strategy_cusca_id', '=', 'sc.id', 'left outer')
-            // ->join('actions_cusca as act', 'act.results_cusca_id', '=', 'rc.id', 'left outer')
             ->join('years as y', 'y.id', '=', 'rc.year_id')
             ->where('y.year_name', date('Y'))
             ->where('rc.organizational_units_id', OrganizationalUnit::where('ou_name', $request->ou_name)->first()?->id)
-            // ->where('')
             ->get();
 
+        foreach ($axis as $value) {
+
+            $value->actions = ActionsCusca::where('results_cusca_id', $value->results_id)->get();
+
+            foreach ($value->actions as $trackings) {
+
+                $trackings->tracking = TrakingCuscaMonthYearAction::select(
+                    '*',
+                )
+                    //Trackings by action
+                    ->where('actions_cusca_id', $trackings->id)
+                    //Trackings by request month
+                    ->where('month_id', Month::where('month_name', $request->month_name)->first()?->id)
+                    ->get();
+
+                foreach ($trackings->tracking as $detail) {
+
+                    //Validate if completed or not completed
+                    $trackings->completed = ($detail->traking_status_id < 3) ? "NO" : "SI";
+                    //Set Tracking detail
+                    $trackings->tracking_detail = $detail->tracking_detail;
+                    //Set Advanced Percentage
+                    $trackings->number_actions = $detail->number_actions;
+                }
+            }
+        }
+
+
         $rowsData = "";
-        // dd($axis);
-
-        foreach ($axis as $key => $value) {
-
-            $rowsData .= "
+        foreach ($axis as $value) {
+            $rowsData .= '
              <tr>
-               <td>$value->result_description</td>
-             </tr>
-            ";
+               <td colspan="4" style="background-color:#B4C6E7;"><b>RESULTADO:</b> ' . $value->result_description . '</td>
+            </tr>
+            ';
+
+            foreach ($value->actions as $item) {
+                $rowsData .= '
+                <tr>
+                    <td colspan="4" style="background-color:#D6DCE4;"><b>ACCIÓN:</b> ' . $item->action_description . '</td>
+                </tr>
+                ';
+                $rowsData .= '
+                <tr>
+                    <td class="fs-sm w-70"><b>INFORME DESCRIPTIVO</b></td>
+                    <td class="fs-sm w-10"><b>COMPLETADO</b></td>
+                    <td class="fs-sm w-10"><b>AVANCE MENSUAL</b></td>
+                    <td class="fs-sm w-10"><b>PRESUPUESTO EJECUTADO</b></td>
+                </tr>
+                <tr>
+                    <td class="w-70"> ' . $item->tracking_detail . '</td>
+                    <td class="w-10" style="text-align: center;"> ' . $item->completed . ' </td>
+                    <td class="w-10" style="text-align: center;"> ' . $item->number_actions . '</td>
+                    <td class="w-10" style="text-align: center;">$ ' . number_format($item->budget_executed, 2) . '</td>
+                </tr>
+                ';
+            }
         }
 
         $html = '
         <style>
-        table {
-          width: 100%;
-          border: 1px solid #a19d9d;
-          border-spacing: 0px;
-        }
-
-        td,
-        th {
-          border: 1px solid #a19d9d;
-          text-align: left;
-          padding: 8px;
-       }
+            table,
+            th,
+            td {
+                border-collapse: collapse;
+                border: 1px solid #000 !important;
+            }
+            td {
+                text-align: left;
+            }
+            col.fondo {
+                background-color: lightblue;
+            }
+            .fs-sm{
+                font-size: 9px;
+                text-align: center;
+            }
+            .w-10{
+                width: 11% !important;
+            }
+            .w-70{
+                width: 67% !important;
+            }
         </style>
-           <table cellspacing="0" cellpadding="5" border="1" style="border-color:#7FB3D5;">
-             <tr>
-                <td style="text-align:center; font-weight:bold;">PLAN CUSCATLAN</td>
-             </tr>
-        ';
+        <table id="table" cellspacing="0" cellpadding="5">
+                <tr style="background-color:#8EA9DB;color:black;">
+                    <td colspan="4" style="text-align: center; font-weight:bold;">' . $project . '</td>
+                </tr>
+            <tbody>
+       ';
 
         // Adding the data
         $html .= "$rowsData
-       </table>";
-        ob_clean();
+            </tbody>
+        </table>";
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        $pdf->Output("reporte", "I");
+        $pdf->Output("reporte.pdf", "I");
     }
 
 

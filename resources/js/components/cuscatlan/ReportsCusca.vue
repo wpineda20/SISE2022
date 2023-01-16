@@ -180,18 +180,18 @@ export default {
       const requests = [
         axisCuscaApi.get(),
         organizationalUnitApi.get(),
-        monthApi.get(),
+        monthApi.post("/monthsAllowed"),
       ];
 
       const responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "Campos obligatorios.", "fail");
       });
 
-      // console.log(responses);
+      console.log(responses);
       if (responses) {
         this.axis = responses[0].data.axisCuscas;
         this.organizationalUnits = responses[1].data.organizationalUnits;
-        this.months = responses[2].data.months;
+        this.months = responses[2].data.monthsAllowed;
 
         this.axis.unshift("GENERAL");
 

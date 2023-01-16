@@ -21,8 +21,8 @@
     }
 
     tr:nth-child(even) {
-        /* background-color: #dddddd; */
-        border: 1px solid white;
+        background-color: #e9e9e9;
+        /* border: 1px solid white; */
     }
 
     .title {
@@ -170,7 +170,7 @@
     </table>
     @else
     <table id="myTable">
-        <thead>
+        {{-- <thead> --}}
             <tr>
                 <td colspan="1" style="text-transform: capitalize; text-align: center"> <b>Ejes</b></td>
                 <td style="text-transform: capitalize; text-align: center"> <b>Resultado</b></td>
@@ -179,7 +179,8 @@
                 <td style="text-transform: capitalize; text-align: center"> <b>Avance</b></td>
                 <td style="text-transform: capitalize; text-align: center"> <b>Porcentaje de avance</b> </td>
             </tr>
-        </thead>
+            {{--
+        </thead> --}}
         @php
         $i = 1;
         @endphp
