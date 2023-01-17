@@ -114,19 +114,19 @@
         <img src="logos/Escudo_D.png" height="100%" width="100%" />
     </div>
     <right>
-        <img src="img/cultura_logo.jpg" alt="" width="20%" style="margin-left: 51rem">
+        <img src="img/cultura_logo.jpg" alt="" width="20%" style="margin-left: 51rem;">
     </right>
     <center>
-        <p style="padding: 0px; margin-bottom: 10px; margin-top:10px">
+        <p style="padding: 0px; margin-top: -20px">
             <b style="text-transform: uppercase">MINISTERIO DE CULTURA</b>
         </p>
-        <p style="padding: 0px; margin-bottom: 10px; margin-top:10px">
+        <p style="padding: 0px; margin-top:10px">
             <b style="text-transform: capitalize">Dirección General de Planificación y Desarrollo Institucional</b>
         </p>
         <p style="padding: 0px; margin-bottom: 15px; margin-top:10px">
             <span style="text-transform: capitalize">Avance de Resultados y Acciones - Plan Cuscatlán</span>
         </p>
-        <p style="padding: 0px; margin-bottom: 15px; margin-top:10px">
+        <p style="padding: 0px; margin-bottom: 15px;">
             <b style="text-transform: uppercase">{{ $axis_title }}</b>
         </p>
     </center>

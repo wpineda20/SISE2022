@@ -18,9 +18,34 @@ use Barryvdh\DomPDF\Facade as DomPDF;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use DB;
 
+// Extend the Fpdi class to create custom Header and Footer
+class MYPDF extends Fpdi
+{
+    public function Header()
+    {
+        // Get the current page break margin
+        $bMargin = $this->getBreakMargin();
+        // Get current auto-page-break mode
+        $auto_page_break = $this->AutoPageBreak;
+        // Disable auto-page-break
+        $this->SetAutoPageBreak(false, 0);
+        // Set custom opacity
+        $this->SetAlpha(0.1);
+        // Set path image
+        $img_file = public_path("Escudo_D.png");
+        // Set background image
+        $this->Image($img_file, 192, 30, 170, 170, '', '', '', false, 200, '', false, false, 0);
+        // Restore full opacity
+        $this->SetAlpha(1);
+        // restore auto-page-break status
+        $this->SetAutoPageBreak($auto_page_break, $bMargin);
+        // Set the starting point for the page content (z-index)
+        $this->setPageMark();
+    }
+}
+
 class PDFController extends Controller
 {
-
 
     /**
      * Generate Monthly PDF.
@@ -33,57 +58,56 @@ class PDFController extends Controller
         set_time_limit(0);
         ini_set("memory_limit", "1024M");
 
-        $project = "PlAN CUSCATLAN";
-        $currentYear = date("Y");
-
         //Create new PDF
-        $pdf = new FPDI();
+        $pdf = new MYPDF('L', 'mm', 'A4', true, 'UTF-8', false);
 
-        // Setting printing
-        $pdf->setPrintHeader(false);
+        // Set margins
+        // $pdf->SetMargins(15, 27, 15);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        // Remove default footer
         $pdf->setPrintFooter(false);
-        $pdf->setCellPaddings(0, 0, 0, 0);
 
-        // set auto page breaks
-        $pdf->SetAutoPageBreak(true, 8);
+        // Set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, 10);
 
+        // Set image scale factor
+        $pdf->setImageScale(1.25);
+
+        // Set source file
         $pdf->setSourceFile(public_path("ejecutivo_s.pdf"));
+
+        // Add page
         $pdf->AddPage();
 
-        // Set custom opacity
-        $pdf->SetAlpha(0.1);
-        //Path
-        $img_file = public_path("Escudo_D.png");
-        //Render the image
-        $pdf->Image($img_file, 192, 115, 165, 165, '', '', '', false, 200, '', false, false, 0);
-        // restore full opacity
-        $pdf->SetAlpha(1);
-
-        // set the starting point for the page content (z-index)
-        $pdf->setPageMark();
-
-        // First page
+        // Import page
         $tplIdx = $pdf->importPage(1);
+        // Use template
         $pdf->useTemplate($tplIdx, null, null, null, null, true);
         $pdf->setXY(0, 0);
 
-        // Titles first page
+        $project = "PLAN CUSCATLAN";
+        $currentYear = date("Y");
+
+        // Titles
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->setXY(73, 25);
+        $pdf->setXY(11, 10);
         $pdf->setFontSize(13);
         $pdf->writeHTML("<b>Dirección General de Planificación y Desarrollo Institucional</b>");
 
-        $pdf->setXY(93, 32);
+        $pdf->setXY(11, 17);
         $pdf->setFontSize(13);
         $pdf->writeHTML("<b>Reporte de Seguimiento Mensual Año $currentYear</b>");
 
         $pdf->setFontSize(12);
-        $pdf->setY(42);
-        $pdf->Write(1, "$request->ou_name", '', '', 'C');
-        $pdf->setY(48);
-        $pdf->Write(1, "$request->month_name", '', '', 'C');
+        $pdf->setY(26);
+        $pdf->Write(1, "$request->ou_name", '', '', 'L');
+        $pdf->setY(33);
+        $pdf->Write(1, "$request->month_name", '', '', 'L');
 
-        $pdf->setY(60);
+        // Table
+        $pdf->setY(45);
         $axis = AxisCusca::select(
             '*',
             'po.*',
@@ -198,7 +222,7 @@ class PDFController extends Controller
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        $pdf->Output("reporte.pdf", "I");
+        $pdf->Output("Reporte Mensual " . $request->month_name . ".pdf", "I");
     }
 
 
@@ -273,7 +297,7 @@ class PDFController extends Controller
             $pdf = DomPDF::loadView("cuscatlan.PDF.report", compact("data", "axis", "axis_title"))
                 ->setPaper("a4", "landscape");
 
-            return $pdf->stream("report-" . now() . ".pdf");
+            return $pdf->stream("Reporte " . $axis_title . ".pdf");
         }
 
         // Report by Axis
@@ -325,6 +349,6 @@ class PDFController extends Controller
         $pdf = DomPDF::loadView("cuscatlan.PDF.report", compact("data", "axis", "axis_title"))
             ->setPaper("a4", "landscape");
 
-        return $pdf->stream("report-" . now() . ".pdf");
+        return $pdf->stream("Reporte " . $axis_title  . ".pdf");
     }
 }
