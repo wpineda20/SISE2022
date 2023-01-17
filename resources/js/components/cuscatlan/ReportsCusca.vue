@@ -56,10 +56,7 @@
             sm="12"
             md="6"
             offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte acumulado' &&
-              parameters.reportTypes != 'Reporte despacho'
-            "
+            v-if="parameters.reportTypes != 'Reporte despacho'"
           >
             <base-select
               label="Unidad/Dirección"
@@ -92,6 +89,27 @@
           </v-col>
           <!-- Month -->
 
+          <!-- Periods -->
+          <v-col
+            cols="12"
+            sm="12"
+            md="6"
+            offset-md="3"
+            v-if="
+              parameters.reportTypes != 'Reporte mensual' &&
+              parameters.reportTypes != 'Reporte despacho'
+            "
+          >
+            <base-select-search
+              label="Periodo"
+              v-model.trim="$v.parameters.period_name.$model"
+              :items="periods"
+              item="period_name"
+              :validation="$v.parameters.period_name"
+            />
+          </v-col>
+          <!-- Periods -->
+
           <!-- Generate report -->
           <v-col cols="12" sm="6" md="6" offset-md="3" align="center">
             <v-btn class="btn btn-normal w-100" @click="generateReport()">
@@ -109,6 +127,7 @@
 import axisCuscaApi from "../../apis/axisCuscaApi";
 import organizationalUnitApi from "../../apis/organizationalUnitApi";
 import monthApi from "../../apis/monthApi";
+import periodApi from "../../apis/periodApi";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import AlertDialog from "../base-components/AlertDialog.vue";
 
@@ -125,11 +144,13 @@ export default {
         axis_description: "",
         ou_name: "",
         month_name: "",
+        period_name: "",
         reportTypes: "Reporte mensual",
       },
       axis: [],
       organizationalUnits: [],
       months: [],
+      periods: [],
       items: [],
       redirectSessionFinished: false,
       textAlert: "",
@@ -152,6 +173,9 @@ export default {
         minLength: minLength(1),
       },
       month_name: {
+        minLength: minLength(1),
+      },
+      period_name: {
         minLength: minLength(1),
       },
       reportTypes: {
@@ -181,23 +205,25 @@ export default {
         axisCuscaApi.get(),
         organizationalUnitApi.get(),
         monthApi.post("/monthsAllowed"),
+        periodApi.get(),
       ];
 
       const responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "Campos obligatorios.", "fail");
       });
 
-      console.log(responses);
       if (responses) {
         this.axis = responses[0].data.axisCuscas;
+        this.axis.unshift("General");
         this.organizationalUnits = responses[1].data.organizationalUnits;
         this.months = responses[2].data.monthsAllowed;
+        this.periods = responses[3].data.periods;
 
-        this.axis.unshift("GENERAL");
-
+        this.parameters.axis_description = "General";
         this.parameters.ou_name = this.organizationalUnits[0].ou_name;
         this.parameters.month_name =
           this.months[new Date().getMonth()].month_name;
+        this.parameters.period_name = this.periods[0].period_name;
       }
 
       this.loading = false;
@@ -237,7 +263,9 @@ export default {
         return;
       }
       if (this.parameters.reportTypes == "Reporte acumulado") {
-        `/pdf/acumulado?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`;
+        window.open(
+          `/pdf/acumulado?ou_name=${this.parameters.ou_name}&reportTypes=${this.parameters.reportTypes}`
+        );
         this.reportDialog = false;
         return;
       }

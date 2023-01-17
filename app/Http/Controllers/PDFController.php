@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 //Models
 use App\Models\Cuscatlan\AxisCusca;
 use App\Models\Cuscatlan\ActionsCusca;
+use App\Models\Cuscatlan\ResultsCusca;
 use App\Models\Cuscatlan\Month;
 use App\Models\Cuscatlan\OrganizationalUnit;
 use App\Models\Cuscatlan\Programmatic_Objective;
@@ -54,7 +55,6 @@ class PDFController extends Controller
      */
     public function generateMensualPDF(Request $request)
     {
-
         set_time_limit(0);
         ini_set("memory_limit", "1024M");
 
@@ -236,12 +236,11 @@ class PDFController extends Controller
         set_time_limit(0);
         ini_set("memory_limit", "1024M");
 
+        $axis_title = "";
         $data = $request->all();
 
-        $axis_title = "";
-
         // Report All Axis
-        if ($request->axis_description == "GENERAL") {
+        if ($request->axis_description == "General") {
 
             $axis_title = "Avance por ejes";
 
@@ -350,5 +349,130 @@ class PDFController extends Controller
             ->setPaper("a4", "landscape");
 
         return $pdf->stream("Reporte " . $axis_title  . ".pdf");
+    }
+
+
+    /**
+     * Generate Accumulated PDF
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function generateAcumuladoPDF(Request $request)
+    {
+        set_time_limit(0);
+        ini_set("memory_limit", "1024M");
+
+        // dd($request);
+        $currentYear = date('Y');
+
+        //Create new PDF
+        $pdf = new MYPDF('L', 'mm', '', true, 'UTF-8', false);
+
+        // Set margins
+        // $pdf->SetMargins(15, 27, 15);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        // Remove default footer
+        $pdf->setPrintFooter(false);
+
+        // Set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, 10);
+
+        // Set image scale factor
+        $pdf->setImageScale(1.25);
+
+        // Set source file
+        $pdf->setSourceFile(public_path("ejecutivo_s.pdf"));
+
+        // Add page
+        $pdf->AddPage();
+
+        // Import page
+        $tplIdx = $pdf->importPage(1);
+        // Use template
+        $pdf->useTemplate($tplIdx, null, null, null, null, true);
+        $pdf->setXY(0, 0);
+
+        // Titles
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->setXY(115, 28);
+        $pdf->setFontSize(12);
+        $pdf->writeHTML("<b>MINISTERIO DE CULTURA</b>");
+        $pdf->setXY(80, 35);
+        $pdf->setFontSize(12);
+        $pdf->writeHTML("<b>Dirección General De Planificación y Desarrollo Institucional</b>");
+
+        $pdf->setXY(123, 42);
+        $pdf->setFontSize(12);
+        $pdf->writeHTML("Reporte Acumulado");
+
+        $pdf->setFontSize(12);
+        $pdf->setY(49);
+        $pdf->Write(1, "$request->ou_name Enero - Febrero $currentYear", '', '', 'C');
+
+        // Table
+        $pdf->setY(65);
+
+        $results = ResultsCusca::select(
+            'results_cusca.*',
+            'act.id as actions_id',
+            'act.action_description',
+            'act.year_goal_actions'
+        )
+            ->join('actions_cusca as act', 'act.results_cusca_id', '=', 'results_cusca.id', 'left outer')
+            ->where('results_cusca.organizational_units_id', OrganizationalUnit::where('ou_name', $request->ou_name)->first()?->id)
+            ->get();
+
+        $rowsData = '';
+
+        foreach ($results as $res) {
+            $rowsData .= '
+             <tr>
+               <td>' . $res->result_description . '</td>
+               <td>' . $res->action_description . '</td>
+               <td></td>
+               <td></td>
+               <td></td>
+            </tr>
+            ';
+        }
+
+        // dd($results);
+
+        $html = '
+        <style>
+            table {
+                width: 100%;
+                border: 2px solid #a19d9d;
+                border-spacing: 0px;
+            }
+            td,
+            th {
+                border: 1px solid #a19d9d;
+                text-align: left;
+                padding: 8px;
+            }
+        </style>
+        <table cellspacing="0" cellpadding="5">
+                <tr>
+                    <td style="text-align: center; font-weight:bold; width: 30%">Resultado</td>
+                    <td style="text-align: center; font-weight:bold; width: 40%">Acción</td>
+                    <td style="text-align: center; font-weight:bold; width: 10%">Número de Acciones Anuales</td>
+                    <td style="text-align: center; font-weight:bold; width: 10%">Avance</td>
+                    <td style="text-align: center; font-weight:bold; width: 10%">Porcentaje De Avance</td>
+                </tr>
+            <tbody>
+       ';
+
+        // Adding the data
+        $html .= "$rowsData
+            </tbody>
+        </table>";
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+
+        $pdf->Output("Reporte Acumulado " . now() . ".pdf", "I");
     }
 }
