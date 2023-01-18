@@ -294,7 +294,6 @@ export default {
     },
 
     async showReport() {
-      // console.log(this.parameters);
       if (this.parameters.reportTypes == "Reporte mensual") {
         window.open(
           `/pdf/mensual?ou_name=${this.parameters.ou_name}&month_name=${this.parameters.month_name}&reportTypes=${this.parameters.reportTypes}`
