@@ -90,7 +90,7 @@
           <!-- Month -->
 
           <!-- Periods -->
-          <v-col
+          <!-- <v-col
             cols="12"
             sm="12"
             md="6"
@@ -107,8 +107,48 @@
               item="period_name"
               :validation="$v.parameters.period_name"
             />
-          </v-col>
+          </v-col> -->
           <!-- Periods -->
+          <!-- Start Month -->
+          <v-col
+            cols="12"
+            sm="12"
+            md="6"
+            offset-md="3"
+            v-if="
+              parameters.reportTypes != 'Reporte mensual' &&
+              parameters.reportTypes != 'Reporte despacho'
+            "
+          >
+            <base-select-search
+              label="Mes inicial"
+              v-model.trim="$v.parameters.month_name.$model"
+              :items="months"
+              item="month_name"
+              :validation="$v.parameters.month_name"
+            />
+          </v-col>
+          <!-- Start Month -->
+          <!-- End Month -->
+          <v-col
+            cols="12"
+            sm="12"
+            md="6"
+            offset-md="3"
+            v-if="
+              parameters.reportTypes != 'Reporte mensual' &&
+              parameters.reportTypes != 'Reporte despacho'
+            "
+          >
+            <base-select-search
+              label="Mes final"
+              v-model.trim="$v.parameters.month_name.$model"
+              :items="months"
+              item="month_name"
+              :validation="$v.parameters.month_name"
+            />
+          </v-col>
+          <!-- End Month -->
 
           <!-- Generate report -->
           <v-col cols="12" sm="6" md="6" offset-md="3" align="center">
@@ -236,7 +276,7 @@ export default {
         return;
       }
       this.reportDialog = true;
-      console.log(this.parameters);
+      // console.log(this.parameters);
       switch (this.parameters.reportTypes) {
         case "Reporte mensual":
           this.textReportDialog = "Generando reporte mensual";
@@ -254,7 +294,7 @@ export default {
     },
 
     async showReport() {
-      console.log(this.parameters);
+      // console.log(this.parameters);
       if (this.parameters.reportTypes == "Reporte mensual") {
         window.open(
           `/pdf/mensual?ou_name=${this.parameters.ou_name}&month_name=${this.parameters.month_name}&reportTypes=${this.parameters.reportTypes}`
@@ -264,7 +304,7 @@ export default {
       }
       if (this.parameters.reportTypes == "Reporte acumulado") {
         window.open(
-          `/pdf/acumulado?ou_name=${this.parameters.ou_name}&reportTypes=${this.parameters.reportTypes}`
+          `/pdf/acumulado?ou_name=${this.parameters.ou_name}&period_name=${this.parameters.period_name}&reportTypes=${this.parameters.reportTypes}`
         );
         this.reportDialog = false;
         return;

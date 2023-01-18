@@ -22,7 +22,6 @@
 
     tr:nth-child(even) {
         background-color: #e9e9e9;
-        /* border: 1px solid white; */
     }
 
     .title {

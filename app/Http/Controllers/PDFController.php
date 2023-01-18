@@ -12,6 +12,7 @@ use App\Models\Cuscatlan\ResultsCusca;
 use App\Models\Cuscatlan\Month;
 use App\Models\Cuscatlan\OrganizationalUnit;
 use App\Models\Cuscatlan\Programmatic_Objective;
+use App\Models\Cuscatlan\Period;
 use App\Models\Cuscatlan\TrakingCuscaMonthYearAction;
 
 //PDF
@@ -414,6 +415,9 @@ class PDFController extends Controller
         // Table
         $pdf->setY(65);
 
+        $start_month = "Enero";
+        $end_month = "Febrero";
+
         $results = ResultsCusca::select(
             'results_cusca.*',
             'act.id as actions_id',
@@ -422,7 +426,34 @@ class PDFController extends Controller
         )
             ->join('actions_cusca as act', 'act.results_cusca_id', '=', 'results_cusca.id', 'left outer')
             ->where('results_cusca.organizational_units_id', OrganizationalUnit::where('ou_name', $request->ou_name)->first()?->id)
+            // ->where('results_cusca.period_id', Period::where('period_name', $request->period_name)->first()?->id)
             ->get();
+
+        foreach ($results as $value) {
+
+            $value->trackings = TrakingCuscaMonthYearAction::select(
+                'number_actions',
+                'month_id',
+                'year_id',
+                'tracking_detail',
+                'actions_cusca_id',
+                'y.year_name',
+            )
+                ->join('years as y', 'y.id', '=', 'year_id')
+                ->where('actions_cusca_id', $value->actions_id)
+                ->where('y.year_name', date('Y'))
+                ->where('month_id', intval(date('n')))
+                ->get();
+
+            $goal = $value->year_goal_actions;
+
+            foreach ($value->trackings as $item) {
+
+                $advance = $item->number_actions;
+
+                $item->per_progress = $advance / $goal * 100;
+            }
+        }
 
         $rowsData = '';
 
@@ -431,14 +462,37 @@ class PDFController extends Controller
              <tr>
                <td>' . $res->result_description . '</td>
                <td>' . $res->action_description . '</td>
-               <td></td>
-               <td></td>
-               <td></td>
-            </tr>
+               <td style="text-align: center; font-weight:bold">' . $res->year_goal_actions . '</td>
+           
             ';
-        }
 
-        // dd($results);
+            foreach ($res->trackings as $value) {
+
+                $per_progress = $value->per_progress;
+                $color = "";
+
+                if ($per_progress == 100.00) {
+                    //Green
+                    $color = "#2ECC71";
+                }
+                if ($per_progress >= 0.00 && $per_progress <= 49.99) {
+                    //Red
+                    $color = "#F31414";
+                }
+                if (
+                    $per_progress >= 50.00 && $per_progress <= 99.99
+                ) {
+                    //Orange
+                    $color = "#F39C12";
+                }
+
+                $rowsData .= '
+                    <td style="text-align: center; font-weight:bold">' . $value->number_actions . '</td>
+                    <td style="text-align: center; font-weight:bold;color: ' . $color . '">' . number_format($per_progress, 2) . '%</td>
+                </tr>
+                ';
+            }
+        }
 
         $html = '
         <style>
@@ -472,7 +526,6 @@ class PDFController extends Controller
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-
-        $pdf->Output("Reporte Acumulado " . now() . ".pdf", "I");
+        $pdf->Output("Reporte Acumulado " . $start_month . ' ' . $end_month . ' ' .  $currentYear . ".pdf", "I");
     }
 }
