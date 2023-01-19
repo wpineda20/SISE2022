@@ -11,7 +11,7 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
-    <div class="container">
+    <div class="container" v-if="actualUser.role == 'Administrador'">
       <v-row>
         <v-col align="start" cols="12" md="6" sm="12">
           <v-btn href="/axisCuscatlan" class="btn-normal-close" rounded>
@@ -40,7 +40,12 @@
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded :disabled="loading != false" @click="openModal">
+                  <v-btn
+                    class="mb-2 btn-normal"
+                    rounded
+                    :disabled="loading != false"
+                    @click="openModal"
+                  >
                     Agregar
                   </v-btn>
                 </v-col>
@@ -279,7 +284,7 @@ export default {
           params: { skip: 0, take: 200 },
         }),
         axisCuscaApi.get(),
-        userApi.get("/actualUserRole"),
+        userApi.post("/actualUser"),
       ];
       let responses = await Promise.all(requests).catch((error) => {
         this.updateAlert(true, "No fue posible obtener los registros.", "fail");
@@ -288,11 +293,12 @@ export default {
           401
         );
       });
-
+      console.log(responses);
       if (responses && responses[0].data.message == "success") {
         this.records = responses[0].data.programmatic_objectives;
         this.users = responses[1].data.users;
         this.axis = responses[2].data.axisCuscas;
+        this.actualUser = responses[3].data.user;
 
         this.recordsFiltered = this.records;
       }

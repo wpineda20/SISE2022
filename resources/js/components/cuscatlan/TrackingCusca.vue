@@ -35,7 +35,7 @@
       :headers="headers"
       :items="recordsFiltered"
       :loading="loading"
-      sort-by="month_name"
+      sort-by="action_description"
       class="elevation-3 shadow p-3 mt-3"
     >
       <template v-slot:top>
@@ -45,19 +45,6 @@
           <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
-                <!--
-                <v-col align="end">
-                  <v-btn
-                    v-if="actualUser.role == 'Administrador'"
-                    class="mb-2 btn-normal"
-                    rounded
-                    @click="openModal"
-                    :disabled="loadingDataForm"
-                  >
-                    Agregar
-                  </v-btn>
-                </v-col>
-                -->
                 <v-col
                   xs="12"
                   sm="12"
@@ -109,96 +96,6 @@
                     </v-col>
                     <!-- Tracking Detail -->
 
-                    <!-- Users -->
-                    <!--
-                    <v-col cols="12" sm="12" md="12">
-                      <base-select-search
-                        label="Usuario"
-                        v-model.trim="$v.editedItem.user_name.$model"
-                        :items="users"
-                        item="user_name"
-                        :validation="$v.editedItem.user_name"
-                        :validationsInput="{
-                          required: true,
-                          minLength: true,
-                        }"
-                        :readonly="true"
-                      />
-                    </v-col>
-                    -->
-                    <!-- Users -->
-                    <!-- Month -->
-                    <!--<v-col cols="12" sm="12" md="12">
-                      <base-select-search
-                        label="Mes"
-                        v-model.trim="$v.editedItem.month_name.$model"
-                        :items="months"
-                        item="month_name"
-                        :validation="$v.editedItem.month_name"
-                        :validationsInput="{
-                          required: true,
-                          minLength: true,
-                        }"
-                      />
-                    </v-col>-->
-                    <!-- Month -->
-                    <!-- Year
-                    <v-col cols="12" sm="12" md="12">
-                      <base-select-search
-                        label="Año"
-                        v-model.trim="$v.editedItem.year_name.$model"
-                        :items="years"
-                        item="year_name"
-                        :validation="$v.editedItem.year_name"
-                        :validationsInput="{
-                          required: true,
-                          minLength: true,
-                        }"
-                      />
-                    </v-col>-->
-                    <!-- Year -->
-
-                    <!-- Actions
-                    <v-col cols="12" sm="12" md="12">
-                      <base-select-search
-                        label="Acción"
-                        v-model.trim="$v.editedItem.action_description.$model"
-                        :items="actions"
-                        item="action_description"
-                        :validation="$v.editedItem.action_description"
-                        :validationsInput="{
-                          required: true,
-                          minLength: true,
-                        }"
-                      />
-                    </v-col>
-                    Actions -->
-                    <!-- Observations -->
-                    <!-- <v-col cols="12" sm="12" md="12">
-                      <base-input
-                        label="Observación"
-                        v-model.trim="$v.editedItem.observation.$model"
-                        :validation="$v.editedItem.observation"
-                        :validationsInput="{
-                          required: true,
-                          minLength: true,
-                        }"
-                      />
-                    </v-col> -->
-                    <!-- Observations -->
-                    <!-- Monthly Actions
-                    <v-col cols="12" sm="12" md="6">
-                      <base-input
-                        label="Acciones mensuales"
-                        v-model.trim="$v.editedItem.monthly_actions.$model"
-                        :validation="$v.editedItem.monthly_actions"
-                        type="number"
-                        :validationsInput="{
-                          required: true,
-                        }"
-                      />
-                    </v-col>
-                    Monthly Actions -->
                     <!-- Bubget executed -->
                     <v-col cols="12" sm="12" md="12">
                       <base-input
@@ -401,11 +298,7 @@
 
 <script>
 import userApi from "../../apis/userApi";
-//import yearApi from "../apis/yearApi";
-//import monthApi from "../apis/monthApi";
 import trakingStatusApi from "../../apis/trakingStatusApi";
-//import trackingCuscaApi from "../../apis/trackingCuscaApi";
-// import actionsCuscaApi from "../../apis/actionsCuscaApi";
 import roleApi from "../../apis/roleApi";
 import lib from "../../libs/function";
 import {
@@ -415,7 +308,6 @@ import {
   helpers,
 } from "vuelidate/lib/validators";
 import trackingCuscaApi from "../../apis/trackingCuscaApi";
-//import trakingCuscaMonthYearActionApi from "../../apis/trakingCuscaMonthYearActionApi";
 
 export default {
   data: () => ({
@@ -425,17 +317,11 @@ export default {
     dialogDelete: false,
     headers: [
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
-      //{ text: "SEGUIMIENTO", value: "tracking_detail" },
       { text: "ACCIÓN", value: "action_description" },
       { text: "ESTADO", value: "status_name" },
       { text: "MES", value: "month_name" },
       { text: "AÑO", value: "year_name" },
-      //{ text: "ACCIONES MENSUALES", value: "monthly_actions" },
       { text: "EJECUTADO", value: "executed" },
-      //{ text: "PRESUPUESTO", value: "budget_executed" },
-      //{ text: "OBSERVACIÓN", value: "observation" },
-      //{ text: "RESPUESTA", value: "reply" },
-      //{ text: "USUARIO", value: "user_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
     records: [],
@@ -552,8 +438,6 @@ export default {
           params: { skip: 0, take: 200 },
         }),
         trakingStatusApi.get(),
-        //yearApi.get(),
-        //monthApi.get(),
         roleApi.get("/user"),
         userApi.post("/actualUser"),
       ];
@@ -568,8 +452,6 @@ export default {
         this.records = responses[0].data.trackingsCusca;
         this.users = responses[1].data.users;
         this.trakingStatuses = responses[2].data.trakingStatuses;
-        //this.years = responses[3].data.years;
-        //this.months = responses[4].data.months;
         this.role = responses[3].data.roles[0];
         this.actualUser = responses[4].data.user;
 
@@ -586,10 +468,6 @@ export default {
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
 
-      //this.editedItem.status_name = this.editedItem.status_name;
-      //this.editedItem.year_name = this.editedItem.year_name;
-      //this.editedItem.month_name = this.editedItem.month_name;
-      //this.editedItem.action_description = this.editedItem.action_description;
       this.editedItem.tracking_detail = this.editedItem.tracking_detail;
       this.editedItem.number_actions = this.editedItem.number_actions;
       this.editedItem.observation = this.editedItem.observation;
@@ -717,8 +595,8 @@ export default {
       if (this.search != "") {
         this.records.forEach((record) => {
           let searchConcat = "";
-          for (let i = 0; i < record.month_name.length; i++) {
-            searchConcat += record.month_name[i].toUpperCase();
+          for (let i = 0; i < record.action_description.length; i++) {
+            searchConcat += record.action_description[i].toUpperCase();
             if (
               searchConcat === this.search.toUpperCase() &&
               !this.recordsFiltered.some((rec) => rec == record)
@@ -746,13 +624,9 @@ export default {
     openModal() {
       this.dialog = true;
 
-      //   this.editedItem.month_name =
-      //this.months[new Date().getMonth()].month_name;
-      //this.editedItem.year_name = new Date().getFullYear();
       console.log(this.actualUser);
       this.editedItem.user_name = "leolopez48";
       this.editedItem.status_name = this.trakingStatuses[0].status_name;
-      //this.editedItem.action_description = this.actions[0].action_description;
       this.editedItem.tracking_detail = "";
       this.editedItem.observation = "";
       this.editedItem.reply = "";
