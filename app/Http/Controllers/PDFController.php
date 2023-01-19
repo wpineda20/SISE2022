@@ -365,6 +365,8 @@ class PDFController extends Controller
 
         // dd($request);
         $currentYear = date('Y');
+        $start_month = $request->start_month;
+        $end_month = $request->end_month;
 
         //Create new PDF
         $pdf = new MYPDF('L', 'mm', '', true, 'UTF-8', false);
@@ -410,13 +412,10 @@ class PDFController extends Controller
 
         $pdf->setFontSize(12);
         $pdf->setY(49);
-        $pdf->Write(1, "$request->ou_name Enero - Febrero $currentYear", '', '', 'C');
+        $pdf->Write(1, "$request->ou_name $start_month - $end_month $currentYear", '', '', 'C');
 
         // Table
         $pdf->setY(65);
-
-        $start_month = "Enero";
-        $end_month = "Febrero";
 
         $results = ResultsCusca::select(
             'results_cusca.*',
@@ -426,7 +425,6 @@ class PDFController extends Controller
         )
             ->join('actions_cusca as act', 'act.results_cusca_id', '=', 'results_cusca.id', 'left outer')
             ->where('results_cusca.organizational_units_id', OrganizationalUnit::where('ou_name', $request->ou_name)->first()?->id)
-            // ->where('results_cusca.period_id', Period::where('period_name', $request->period_name)->first()?->id)
             ->get();
 
         foreach ($results as $value) {
@@ -442,7 +440,14 @@ class PDFController extends Controller
                 ->join('years as y', 'y.id', '=', 'year_id')
                 ->where('actions_cusca_id', $value->actions_id)
                 ->where('y.year_name', date('Y'))
-                ->where('month_id', intval(date('n')))
+                // ->where('month_id', intval(date('n')))
+                ->whereBetween(
+                    'month_id',
+                    [
+                        Month::where('month_name', $request->start_month)->first()?->id,
+                        Month::where('month_name', $request->end_month)->first()?->id
+                    ]
+                )
                 ->get();
 
             $goal = $value->year_goal_actions;
@@ -455,6 +460,7 @@ class PDFController extends Controller
             }
         }
 
+        // dd($results);
         $rowsData = '';
 
         foreach ($results as $res) {
@@ -526,6 +532,6 @@ class PDFController extends Controller
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        $pdf->Output("Reporte Acumulado " . $start_month . ' ' . $end_month . ' ' .  $currentYear . ".pdf", "I");
+        $pdf->Output("Reporte Acumulado " . $start_month . ' - ' . $end_month . ' ' .  $currentYear . ".pdf", "I");
     }
 }

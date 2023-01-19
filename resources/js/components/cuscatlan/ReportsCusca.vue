@@ -2,9 +2,8 @@
   <div data-app>
     <alert-time-out
       :redirect="redirectSessionFinished"
-      @redirect="redirectSessionFinished = $event"
+      @redirect="updateTimeOut($event)"
     />
-
     <alert
       :text="textAlert"
       :event="alertEvent"
@@ -122,10 +121,10 @@
           >
             <base-select-search
               label="Mes inicial"
-              v-model.trim="$v.parameters.month_name.$model"
+              v-model.trim="$v.parameters.start_month_name.$model"
               :items="months"
               item="month_name"
-              :validation="$v.parameters.month_name"
+              :validation="$v.parameters.start_month_name"
             />
           </v-col>
           <!-- Start Month -->
@@ -142,10 +141,10 @@
           >
             <base-select-search
               label="Mes final"
-              v-model.trim="$v.parameters.month_name.$model"
+              v-model.trim="$v.parameters.end_month_name.$model"
               :items="months"
               item="month_name"
-              :validation="$v.parameters.month_name"
+              :validation="$v.parameters.end_month_name"
             />
           </v-col>
           <!-- End Month -->
@@ -184,6 +183,8 @@ export default {
         axis_description: "",
         ou_name: "",
         month_name: "",
+        start_month_name: "",
+        end_month_name: "",
         period_name: "",
         reportTypes: "Reporte mensual",
       },
@@ -199,8 +200,6 @@ export default {
       loading: false,
       textReportDialog: "",
       reportDialog: false,
-      uploadFinished: false,
-      filterApplied: false,
     };
   },
 
@@ -215,6 +214,12 @@ export default {
       month_name: {
         minLength: minLength(1),
       },
+      start_month_name: {
+        minLength: minLength(1),
+      },
+      end_month_name: {
+        minLength: minLength(1),
+      },
       period_name: {
         minLength: minLength(1),
       },
@@ -227,15 +232,6 @@ export default {
 
   mounted() {
     this.initialize();
-  },
-
-  watch: {
-    // uploadFinished() {
-    //   if (this.filterApplied) {
-    //     this.showReport();
-    //     this.filterApplied = false;
-    //   }
-    // },
   },
 
   methods: {
@@ -268,25 +264,30 @@ export default {
 
       this.loading = false;
     },
+
+    updateTimeOut(event) {
+      this.redirectSessionFinished = event;
+    },
+
     async generateReport() {
       this.$v.$touch();
-
       if (this.$v.$invalid) {
-        this.updateAlert(true, "Campos obligatorios.", "fail");
         return;
       }
-      this.reportDialog = true;
-      // console.log(this.parameters);
+
       switch (this.parameters.reportTypes) {
         case "Reporte mensual":
+          this.reportDialog = true;
           this.textReportDialog = "Generando reporte mensual";
           this.showReport();
           break;
         case "Reporte acumulado":
+          this.reportDialog = true;
           this.textReportDialog = "Generando reporte acumulado";
           this.showReport();
           break;
         case "Reporte despacho":
+          this.reportDialog = true;
           this.textReportDialog = "Generando reporte despacho";
           this.showReport();
           break;
@@ -294,25 +295,32 @@ export default {
     },
 
     async showReport() {
+      console.log(this.parameters);
       if (this.parameters.reportTypes == "Reporte mensual") {
-        window.open(
-          `/pdf/mensual?ou_name=${this.parameters.ou_name}&month_name=${this.parameters.month_name}&reportTypes=${this.parameters.reportTypes}`
-        );
-        this.reportDialog = false;
+        setTimeout(() => {
+          window.open(
+            `/pdf/mensual?ou_name=${this.parameters.ou_name}&month_name=${this.parameters.month_name}&reportTypes=${this.parameters.reportTypes}`
+          );
+          this.reportDialog = false;
+        }, 1000);
         return;
       }
       if (this.parameters.reportTypes == "Reporte acumulado") {
-        window.open(
-          `/pdf/acumulado?ou_name=${this.parameters.ou_name}&period_name=${this.parameters.period_name}&reportTypes=${this.parameters.reportTypes}`
-        );
-        this.reportDialog = false;
+        setTimeout(() => {
+          window.open(
+            `/pdf/acumulado?ou_name=${this.parameters.ou_name}&start_month=${this.parameters.start_month_name}&end_month=${this.parameters.end_month_name}&reportTypes=${this.parameters.reportTypes}`
+          );
+          this.reportDialog = false;
+        }, 1000);
         return;
       }
       if (this.parameters.reportTypes == "Reporte despacho") {
-        window.open(
-          `/pdf/despacho?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`
-        );
-        this.reportDialog = false;
+        setTimeout(() => {
+          window.open(
+            `/pdf/despacho?axis_description=${this.parameters.axis_description}&reportTypes=${this.parameters.reportTypes}`
+          );
+          this.reportDialog = false;
+        }, 1000);
         return;
       }
     },
