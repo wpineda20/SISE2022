@@ -9,6 +9,7 @@ use App\Models\Cuscatlan\TrackingCusca;
 use App\Models\User;
 use App\Models\Cuscatlan\TrakingStatus;
 use App\Models\Cuscatlan\TrakingCuscaMonthYearAction;
+use App\Models\Cuscatlan\ActionsCusca;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,13 +25,22 @@ class TrackingCuscaController extends Controller
         $roles = RoleController::getAllowedRoles();
         $filters = [];
 
+        // dd($roles);
         if (isset($roles[0])) {
             switch ($roles[0]) {
                 case "Enlace":
+                    // All Trackings of the Specific Enlace
                     $filters = [
-                        'ou.id' => auth()->user()->organizational_units_id,
+                        'ac.user_id' => auth()->user()->id,
                     ];
                     break;
+
+                    // case "Auditor":
+                    //     // All Trackings of the Organizational Unit
+                    //     $filters = [
+                    //         'ou.id' => auth()->user()->organizational_units_id,
+                    //     ];
+                    //     break;
             }
         }
 
@@ -64,6 +74,8 @@ class TrackingCuscaController extends Controller
             'y.*',
             'm.*',
             'traking_cusca_month_year_action.tracking_detail',
+            'traking_cusca_month_year_action.actions_cusca_id',
+            'traking_cusca_month_year_action.number_actions',
             'traking_cusca_month_year_action.executed',
             'traking_cusca_month_year_action.observation',
             'traking_cusca_month_year_action.reply',
@@ -71,12 +83,9 @@ class TrackingCuscaController extends Controller
             'ou.*',
             'reply',
             'observation',
-            //'user_name',
-            //'tc.traking.status_id'
             'traking_cusca_month_year_action.id as id',
         )
             ->join('actions_cusca as ac', 'traking_cusca_month_year_action.actions_cusca_id', '=', 'ac.id')
-            //->join('users as u', 'tracking_cusca.user_id', '=', 'u.id')
             ->join('years as y', 'traking_cusca_month_year_action.year_id', '=', 'y.id')
             ->join('months as m', 'traking_cusca_month_year_action.month_id', '=', 'm.id')
             ->join('results_cusca as re', 'ac.results_cusca_id', '=', 're.id')
@@ -92,11 +101,13 @@ class TrackingCuscaController extends Controller
         $trackingsCusca = Encrypt::encryptObject(
             $trackingsCusca,
             'id',
-            'actions_cusca_id',
+            // 'actions_cusca_id',
             'year_id',
             'month_id',
             'traking_status_id'
         );
+
+        // dd($trackingsCusca);
 
         return response()->json(['message' => 'success', 'trackingsCusca' => $trackingsCusca]);
     }
@@ -109,6 +120,7 @@ class TrackingCuscaController extends Controller
      */
     public function store(Request $request)
     {
+        //NO USED
         if (auth()->user()->getRoleNames()[0] != "Administrador") {
             return response()->json([
                 'message' => 'success',
@@ -128,6 +140,8 @@ class TrackingCuscaController extends Controller
         TrackingCusca::insert($data);
 
         return response()->json(['message' => 'success']);
+
+        //NO USED
     }
 
     /**
@@ -150,14 +164,27 @@ class TrackingCuscaController extends Controller
      */
     public function update(Request $request)
     {
-        if (auth()->user()->user_name != $request->user_name || !auth()->user()->hasRole('Administrador') || !auth()->user()->hasRole('Enlace')) {
-            return response()->json(["message" => "success", "reason" => "Únicamente $request->user_name o el administrador puede modificar el registro."]);
+        // Verify if is admin or enlace
+        // if (auth()->user()->getRoleNames()[0] != "Administrador" || auth()->user()->getRoleNames()[0] != "Enlace") {
+        //     return response()->json([
+        //         'message' => 'success',
+        //         "reason" => "Únicamente un enlace o el administrador puede modificar el registro."
+        //     ]);
+        // }
+
+        // Verify if the number of actions is higher than year goal actions
+        if ($request->number_actions > $request->year_goal_actions) {
+            return response()->json([
+                'message' => 'success',
+                "verifyActions" => "El número de acciones no debe ser mayor a la meta de acciones anuales"
+            ]);
         }
 
         $status = TrakingStatus::where('status_name', $request->status_name)->first();
         $id = (int) Encrypt::decryptValue($request->id);
 
         $traking = TrakingCuscaMonthYearAction::where('id', $id)->first();
+
 
         if ($request->observation != $traking->observation && !is_null($traking->observation) && !$traking->observation != "") {
             $action = TrakingCuscaMonthYearAction::join('actions_cusca as ac', 'traking_cusca_month_year_action.actions_cusca_id', '=', 'ac.user_id', 'left outer')
@@ -174,6 +201,7 @@ class TrackingCuscaController extends Controller
 
         $traking->observation = $request->observation ?? "";
         $traking->reply = $request->reply ?? "";
+        $traking->number_actions = $request->number_actions;
         $traking->tracking_detail = $request->tracking_detail;
         $traking->executed = ($request->executed) ? "SI" : "NO";
         $traking->traking_status_id = $status->id;

@@ -11,8 +11,23 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="start" cols="12" md="6" sm="12">
+          <v-btn href="/programmaticObjective" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+        <v-col align="end" cols="12" md="6" sm="12">
+          <v-btn href="/resultsCuscatlan" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
+      :loading="loading"
       :items="recordsFiltered"
       sort-by="description_strategy"
       class="elevation-3 shadow p-3 mt-3"
@@ -21,11 +36,11 @@
         <v-toolbar flat>
           <v-toolbar-title>Estrategias</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" @click="openModal" rounded>
+                  <v-btn class="mb-2 btn-normal" :disabled="loading != false" @click="openModal" rounded>
                     Agregar
                   </v-btn>
                 </v-col>
@@ -72,12 +87,12 @@
                         }"
                         :min="1"
                         :max="500"
-                        :rows="4"
+                        :rows="6"
                       />
                     </v-col>
                     <!-- Description Estrategica-->
                     <!-- Objetivo Programatico -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Objetivo Programático"
                         v-model.trim="$v.editedItem.description.$model"
@@ -92,7 +107,7 @@
                     </v-col>
                     <!-- Objetivo Programatico -->
                     <!-- Unidad Organizativa -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select-search
                         label="Unidad Organizativa"
                         v-model.trim="$v.editedItem.ou_name.$model"
@@ -107,7 +122,7 @@
                     </v-col>
                     <!-- Unidad Organizativa -->
                     <!-- User -->
-                    <v-col cols="12" sm="6" md="6" class="mt-2">
+                    <v-col cols="12" sm="12" md="12" class="mt-2">
                       <base-select
                         label="Usuario"
                         v-model.trim="$v.editedItem.user_name.$model"
@@ -118,15 +133,6 @@
                       />
                     </v-col>
                     <!-- User -->
-                    <!-- Executed -->
-                    <!--
-                    <v-col cols="12" sm="6" md="6" class="pt-2">
-                      <v-checkbox
-                        v-model="$v.editedItem.executed.$model"
-                        label="Ejecutado"
-                      ></v-checkbox>
-                    </v-col>-->
-                    <!-- Executed-->
                   </v-row>
                   <!-- Form -->
                   <v-row>
@@ -209,12 +215,12 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "ESTRATEGÍA", value: "description_strategy" },
       { text: "OBJETIVO PROGRAMATICO", value: "description" },
       { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
-      //{ text: "EJECUTADO", value: "executed" },
       { text: "USUARIO", value: "user_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
@@ -226,14 +232,12 @@ export default {
       ou_name: "",
       description: "",
       description_strategy: "",
-      //executed: "",
     },
     defaultItem: {
       user_name: "",
       ou_name: "",
       description: "",
       description_strategy: "",
-      //executed: "",
     },
     textAlert: "",
     alertEvent: "success",
@@ -264,9 +268,6 @@ export default {
         minLength: minLength(1),
         maxLength: maxLength(500),
       },
-      /*executed: {
-        required,
-      },*/
     },
   },
   // Validations
@@ -291,6 +292,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -318,9 +320,9 @@ export default {
           responses[2].data.programmatic_objectives;
         this.organizational_units = responses[3].data.organizationalUnits;
         this.actualUser = responses[4].data.user;
-        console.log(responses);
         this.recordsFiltered = this.records;
       }
+      this.loading = false;
     },
 
     editItem(item) {
@@ -465,9 +467,8 @@ export default {
       this.dialog = true;
       this.editedItem.user_name = this.actualUser.user_name;
       this.editedItem.ou_name = this.organizational_units[0].ou_name;
-      this.editedItem.description = this.programmatic_objectives[0].description;
+      this.editedItem.description = this.programmatic_objectives[0].description; // Programatic Objetive
       this.editedItem.description_strategy = "";
-      //this.editedItem.executed = false;
     },
   },
 };

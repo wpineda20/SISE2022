@@ -14,6 +14,7 @@
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="year_name"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -30,6 +31,7 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    :disabled="loading != false"
                   >
                     Agregar
                   </v-btn>
@@ -170,6 +172,7 @@ export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "AÑO", value: "year_name" },
@@ -229,6 +232,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -245,6 +249,7 @@ export default {
       this.periods = responses[1].data.periods;
 
       this.recordsFiltered = this.records;
+      this.loading = false;
     },
 
     editItem(item) {

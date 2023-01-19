@@ -19,14 +19,13 @@ class ResultsCusca extends Model
     protected $fillable = [
         'id',
         'result_description',
-        'responsible_name',
-        //'executed',
         'user_id',
-        'axis_cusca_id',
-        //'indicator_id',
+        'indicator_id',
         'organizational_units_id',
         'year_id',
         'period_id',
+        'unit_id',
+        'strategy_cusca_id',
     ];
     public $hidden = [
         'created_at',

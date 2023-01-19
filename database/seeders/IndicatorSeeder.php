@@ -18,21 +18,11 @@ class IndicatorSeeder extends Seeder
         Indicator::insert([
             [
                 'id' => 1,
-                'indicator_name' => 'Indicator 1',
+                'indicator_name' => 'Indicator Uno',
                 'strategic_indicator' => 'SI',
                 'institution_id' => 1,
                 'unit_id' => 1,
                 'organizational_unit_id' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-             [
-                'id' => 2,
-                'indicator_name' => 'Indicator 2',
-                'strategic_indicator' => 'NO',
-                'institution_id' => 2,
-                'unit_id' => 2,
-                'organizational_unit_id' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

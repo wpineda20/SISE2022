@@ -25,7 +25,7 @@ class MonthController extends Controller
         return response()->json(['message' => 'success', 'months' => $months]);
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -52,7 +52,7 @@ class MonthController extends Controller
     {
         Month::insert($request->all());
 
-        return response()->json(['message'=>'success']);
+        return response()->json(['message' => 'success']);
     }
 
     /**
@@ -78,7 +78,7 @@ class MonthController extends Controller
         $data = EncryptController::decryptModel($request->all(), 'id');
 
         Month::where('id', $data['id'])->update($data);
-        return response()->json(["message"=>"success"]);
+        return response()->json(["message" => "success"]);
     }
 
     /**
@@ -92,6 +92,24 @@ class MonthController extends Controller
         $id = EncryptController::decryptValue($id);
 
         Month::where('id', $id)->delete();
-        return response()->json(["message"=>"success"]);
+        return response()->json(["message" => "success"]);
+    }
+
+    /**
+     * Months allowed for monthly reporting.
+     *
+     * @param  \App\Models\Month  $month
+     * @return \Illuminate\Http\Response
+     */
+
+    public function monthsAllowed(Request $request)
+    {
+        $currentMonth = intval(date("n"));
+
+        $monthsAllowed = DB::table('months')
+            ->where('id', '<=', $currentMonth)
+            ->get();
+
+        return response()->json(["message" => "success", "monthsAllowed" => $monthsAllowed]);
     }
 }

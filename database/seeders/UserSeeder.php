@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'name' => 'William Pineda',
             'job_title' => 'Técnico',
             'phone' => '0000-0000',
-            'organizational_units_id' => 1,
+            'organizational_units_id' => 2,
             //'institution_id' => 2,
             'email' => 'wpineda@cultura.gob.sv',
             'password' => Hash::make('12345678'),

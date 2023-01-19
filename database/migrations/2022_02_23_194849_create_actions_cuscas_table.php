@@ -16,19 +16,15 @@ class CreateActionsCuscasTable extends Migration
         Schema::create('actions_cusca', function (Blueprint $table) {
             $table->id();
             $table->text('action_description');
-            $table->integer('annual_actions');
-            $table->string('executed')->default('NO');
+            $table->integer('year_goal_actions');
             $table->string('responsable_name');
             $table->string('verification_method');
             $table->string('data_source');
-            $table->text('measure_unit', 500);
             $table->double('budget_executed', 8, 2);
             $table->foreignId('created_user_id')->references('id')->on('users')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('results_cusca_id')->references('id')->on('results_cusca');
-            //$table->foreignId('month_id')->references('id')->on('months');
-            //$table->foreignId('year_id')->references('id')->on('years');
-            //$table->foreignId('financings_id')->references('id')->on('financings');
+            $table->foreignId('unit_id')->references('id')->on('units');
             $table->softDeletes();
             $table->timestamps();
         });

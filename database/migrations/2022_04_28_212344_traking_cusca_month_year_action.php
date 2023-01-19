@@ -21,6 +21,7 @@ class TrakingCuscaMonthYearAction extends Migration
             $table->foreignId('month_id')->references('id')->on('months');
             $table->foreignId('traking_status_id')->references('id')->on('traking_statuses');
             $table->text('tracking_detail')->default("");
+            $table->integer('number_actions')->nullable()->default(0);
             $table->string('executed')->default("NO");
             $table->string('observation', 500)->default("");
             $table->string('reply', 500)->default("");

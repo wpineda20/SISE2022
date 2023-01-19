@@ -13,6 +13,7 @@
     />
     <v-data-table
       :headers="headers"
+      :loading="loading"
       :items="recordsFiltered"
       :search="search"
       :options.sync="options"
@@ -37,6 +38,7 @@
                     class="mb-2 btn-normal no-uppercase"
                     v-bind="attrs"
                     v-on="on"
+                    :disabled="loading != false"
                     rounded
                     @click="newUser()"
                   >
@@ -276,6 +278,7 @@ export default {
   data() {
     return {
       search: "",
+      loading: false,
       dialog: false,
       dialogDelete: false,
       headers: [
@@ -407,6 +410,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       //this.$v.$reset();
       this.records = [];
       this.recordsFiltered = [];
@@ -433,6 +437,7 @@ export default {
 
       this.roles = responses[1].data.roles;
       this.organizationalUnits = responses[2].data.organizationalUnits;
+      this.loading = false;
     },
 
     editItem(item) {

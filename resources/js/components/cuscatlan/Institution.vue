@@ -14,6 +14,7 @@
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="institution_name"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -30,6 +31,7 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    :disabled="loading != false"
                     @click="$v.editedItem.$reset()"
                   >
                     Agregar
@@ -213,6 +215,7 @@ export default {
     search: "",
     dialog: false,
     dialogDelete: false,
+    loading: false,
     headers: [
       { text: "NOMBRE", value: "institution_name" },
       { text: "DESCRIPCIÓN", value: "description" },
@@ -289,6 +292,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -302,6 +306,7 @@ export default {
 
       this.records = res.data.institutions;
       this.recordsFiltered = res.data.institutions;
+      this.loading = false;
     },
 
     editItem(item) {

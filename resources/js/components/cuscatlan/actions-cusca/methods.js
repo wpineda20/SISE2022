@@ -1,13 +1,14 @@
 import userApi from "../../../apis/userApi";
 import resultsCuscaApi from "../../../apis/resultsCuscaApi";
 import monthApi from "../../../apis/monthApi";
-//import yearApi from "../../../apis/yearApi";
+import unitApi from "../../../apis/unitApi";
 import actionsCuscaApi from "../../../apis/actionsCuscaApi";
 import lib from "../../../libs/function";
 //import moment from "moment"
 
 export default {
     async initialize() {
+        this.loading = true;
         this.records = [];
         this.recordsFiltered = [];
 
@@ -17,10 +18,10 @@ export default {
                 params: { skip: 0, take: 200 },
             }),
             resultsCuscaApi.get(),
-            //yearApi.get(),
             monthApi.get(),
             userApi.get("/actualUserRole"),
             userApi.post("/actualUser"),
+            unitApi.get(),
         ];
         let responses = await Promise.all(requests).catch((error) => {
             this.updateAlert(
@@ -38,13 +39,14 @@ export default {
             this.records = responses[0].data.actionsCusca;
             this.users = responses[1].data.users;
             this.resultsCusca = responses[2].data.resultsCusca;
-            //this.years = responses[3].data.years;
             this.months = responses[3].data.months;
             this.editedItem.months = this.months;
             this.actualUser = responses[5].data.user;
+            this.units = responses[6].data.units;
 
             this.recordsFiltered = this.records;
         }
+        this.loading = false;
     },
 
     editItem(item) {
@@ -116,7 +118,7 @@ export default {
                 .catch((error) => {
                     this.updateAlert(
                         true,
-                        "No fue posible crear el registro.",
+                        "No fue posible actualizar el registro.",
                         "fail"
                     );
                     this.close();
@@ -133,8 +135,14 @@ export default {
                     "success"
                 );
             }
+            if (res.data.message == "reason") {
+                this.updateAlert(
+                    true,
+                    "El usuario no posee los permisos suficientes para esta acción.",
+                    "reason"
+                );
+            }
         } else {
-
             const res = await actionsCuscaApi
                 .post(null, this.editedItem)
                 .catch((error) => {
@@ -195,20 +203,18 @@ export default {
         this.editedItem.result_description =
             this.resultsCusca[0].result_description;
         this.editedItem.user_name = this.actualUser.user_name;
-        //this.editedItem.year_name = new Date().getFullYear();
-
-        //const month_name = moment().format("MMMM");
-        //this.editedItem.month_name = month_name.charAt(0).toUpperCase() + month_name.slice(1);
-
         this.editedItem.action_description = "";
         this.editedItem.responsable_name = "";
-        this.editedItem.annual_actions = 0;
+        // this.editedItem.annual_actions = 0;
+        this.editedItem.year_goal_actions = 0;
         this.editedItem.budget_executed = 0;
         this.editedItem.verification_method = "";
         this.editedItem.data_source = "";
-        //this.editedItem.executed = false;
         this.editedItem.months = this.months;
-        this.editedItem.months.forEach(month => month.value = false)
+        this.editedItem.months.forEach((month) => (month.value = false));
+        this.editedItem.unit_name = this.units[0].unit_name;
+        //const month_name = moment().format("MMMM");
+        //this.editedItem.month_name = month_name.charAt(0).toUpperCase() + month_name.slice(1);
 
         this.$v.$reset();
     },
@@ -218,6 +224,8 @@ export default {
             (element) => element.value == true
         );
 
-        this.editedItem.annual_actions = this.editedItem.months.filter((element) => element.value).length;
+        // this.editedItem.annual_actions = this.editedItem.months.filter(
+        //     (element) => element.value
+        // ).length;
     },
 };

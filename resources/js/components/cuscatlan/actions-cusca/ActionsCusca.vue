@@ -11,9 +11,24 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container" v-if="actualUser.role == 'Administrador'">
+      <v-row>
+        <v-col align="start" cols="12" md="6" sm="12">
+          <v-btn href="/resultsCuscatlan" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+        <v-col align="end" cols="12" md="6" sm="12">
+          <v-btn href="/trackingCuscatlan" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="action_description"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -21,11 +36,16 @@
         <v-toolbar flat>
           <v-toolbar-title>Acciones</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded @click="openModal">
+                  <v-btn
+                    class="mb-2 btn-normal"
+                    rounded
+                    :disabled="loading != false"
+                    @click="openModal"
+                  >
                     Agregar
                   </v-btn>
                 </v-col>
@@ -59,7 +79,7 @@
                   <!-- Form -->
                   <v-row>
                     <!-- Description Acciones -->
-                    <v-col cols="12" sm="6" md="12">
+                    <v-col cols="12" sm="12" md="12">
                       <base-text-area
                         label="Acciones"
                         v-model.trim="$v.editedItem.action_description.$model"
@@ -67,21 +87,47 @@
                         validationTextType="default"
                         :min="1"
                         :max="500"
-                        :rows="2"
+                        :rows="6"
                       />
                     </v-col>
                     <!-- Description Acciones-->
 
-                    <!-- Executed -->
-                    <!--
-                    <v-col cols="12" sm="6" md="6" class="pt-0">
-                      <v-checkbox
-                        v-model="$v.editedItem.executed.$model"
-                        label="Ejecutado"
-                      ></v-checkbox>
+                    <!-- Results -->
+                    <v-col cols="12" sm="12" md="12">
+                      <base-select-search
+                        label="Resultado"
+                        v-model="$v.editedItem.result_description.$model"
+                        :items="resultsCusca"
+                        item="result_description"
+                        :validation="$v.editedItem.result_description"
+                      />
                     </v-col>
-                    -->
-                    <!-- Executed-->
+                    <!-- Results -->
+
+                    <!-- Unit -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Unidad de medida"
+                        v-model.trim="$v.editedItem.unit_name.$model"
+                        :items="units"
+                        item="unit_name"
+                        :validation="$v.editedItem.unit_name"
+                      />
+                    </v-col>
+                    <!-- Unit -->
+
+                    <!-- Users -->
+                    <v-col cols="12" sm="6" md="6">
+                      <base-select-search
+                        label="Enlace"
+                        v-model.trim="$v.editedItem.user_name.$model"
+                        :validation="$v.editedItem.user_name"
+                        :items="users"
+                        item="user_name"
+                      />
+                    </v-col>
+                    <!-- :readonly="true" -->
+                    <!-- Users -->
 
                     <!-- Responsable -->
                     <v-col cols="12" sm="12" md="12">
@@ -106,7 +152,7 @@
                     <!-- Verification Method -->
 
                     <!-- Data Source -->
-                    <v-col cols="12" sm="12" md="12">
+                    <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Fuente de datos"
                         v-model="$v.editedItem.data_source.$model"
@@ -115,17 +161,6 @@
                       />
                     </v-col>
                     <!-- Data Source -->
-
-                    <!--Measure Unit -->
-                    <v-col cols="12" sm="12" md="12">
-                      <base-input
-                        label="Unidad de medida"
-                        v-model="$v.editedItem.measure_unit.$model"
-                        :validation="$v.editedItem.measure_unit"
-                        validationTextType="default"
-                      />
-                    </v-col>
-                    <!-- Measure Unit -->
 
                     <!-- Bubget executed -->
                     <v-col cols="12" sm="12" md="6">
@@ -138,33 +173,20 @@
                     </v-col>
                     <!-- Bubget executed -->
 
-                    <!-- Users -->
+                    <!-- Year Goal Actions -->
                     <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Enlace"
-                        v-model.trim="$v.editedItem.user_name.$model"
-                        :validation="$v.editedItem.user_name"
-                        :items="users"
-                        item="user_name"
+                      <base-input
+                        label="Meta de actividades anuales"
+                        v-model.trim="$v.editedItem.year_goal_actions.$model"
+                        :validation="$v.editedItem.year_goal_actions"
+                        v-mask="'####'"
+                        type="number"
                       />
                     </v-col>
-                    <!-- :readonly="true" -->
-                    <!-- Users -->
-
-                    <!-- Results -->
-                    <v-col cols="12" sm="6" md="6">
-                      <base-select-search
-                        label="Resultado"
-                        v-model="$v.editedItem.result_description.$model"
-                        :items="resultsCusca"
-                        item="result_description"
-                        :validation="$v.editedItem.result_description"
-                      />
-                    </v-col>
-                    <!-- Results -->
+                    <!-- Year Goal Actions -->
 
                     <!-- Annual Actions -->
-                    <v-col cols="12" sm="6" md="6">
+                    <!-- <v-col cols="12" sm="6" md="6">
                       <base-input
                         label="Número de acciones"
                         v-model.trim="$v.editedItem.annual_actions.$model"
@@ -173,9 +195,8 @@
                         type="number"
                         :min="2000"
                         :max="2050"
-                        readonly
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Annual Actions -->
 
                     <!-- Meses -->
@@ -284,28 +305,20 @@
 <script>
 import Validations from "./Validations";
 import Methods from "./methods";
-// import moment from "moment";
 
 export default {
   data: () => ({
     search: "",
     dialog: false,
+    loading: false,
     dialogDelete: false,
     headers: [
       { text: "RESULTADO", value: "result_description" },
       { text: "ACCIÓN", value: "action_description" },
-      { text: "UNIDAD ORGANIZATIVA", value: "ou_name" },
+      { text: "UD. ORGANIZATIVA", value: "ou_name" },
+      { text: "META DE ACCIONES ANUALES", value: "year_goal_actions" },
+      // { text: "NO. DE ACCIONES", value: "annual_actions" },
       { text: "AÑO", value: "year_name" },
-      //{ text: "NO. DE ACCIONES ANUALES", value: "annual_actions"},
-      //{ text: "EJECUTADO", value: "executed" },
-      //{ text: "RESPONSABLE", value: "responsable_name" },
-      //{ text: "METODO DE VERIFICACIÓN", value: "verification_method" },
-      //{ text: "FUENTE DE DATOS", value: "data_source" },
-      //{ text: "UNIDAD DE MEDIDA", value: "measure_unit" },
-      //{ text: "PRESUPUESTO EJECUTADO", value: "budget_executed" },
-      //{ text: "USUARIO", value: "user_name" },
-      //{ text: "MES", value: "month_name" },
-      //{ text: "AÑO", value: "year_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
     records: [],
@@ -313,32 +326,28 @@ export default {
     editedIndex: -1,
     editedItem: {
       action_description: "",
-      annual_actions: 0,
+      // annual_actions: 0,
+      year_goal_actions: 0,
       responsable_name: "",
       verification_method: "",
       data_source: "",
-      measure_unit: "",
       budget_executed: 0,
       user_name: "",
       result_description: "",
-      //month_name: "",
-      //year_name: "",
-      //executed: false,
+      unit_name: "",
       months: [],
     },
     defaultItem: {
       action_description: "",
-      annual_actions: 0,
+      // annual_actions: 0,
+      year_goal_actions: 0,
       responsable_name: "",
       verification_method: "",
       data_source: "",
-      measure_unit: "",
       budget_executed: 0,
       user_name: "",
       result_description: "",
-      //month_name: "",
-      //year_name: "",
-      //executed: false,
+      unit_name: "",
       months: [],
     },
 
@@ -346,9 +355,8 @@ export default {
     alertEvent: "success",
     showAlert: false,
     users: [],
+    units: [],
     resultsCusca: [],
-
-    //years: [],
     redirectSessionFinished: false,
     actualUser: {},
     validation: {

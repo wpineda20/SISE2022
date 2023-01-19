@@ -11,9 +11,24 @@
       @show-alert="updateAlert($event)"
       class="mb-2"
     />
+    <div class="container">
+      <v-row>
+        <v-col align="start" cols="12" md="6" sm="12">
+          <v-btn href="/axisCuscatlan" class="btn-normal-close" rounded>
+            Volver
+          </v-btn>
+        </v-col>
+        <v-col align="end" cols="12" md="6" sm="12">
+          <v-btn href="/strategyCusca" class="btn-normal" rounded>
+            Siguiente
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-data-table
       :headers="headers"
       :items="recordsFiltered"
+      :loading="loading"
       sort-by="description"
       class="elevation-3 shadow p-3 mt-3"
     >
@@ -21,11 +36,11 @@
         <v-toolbar flat>
           <v-toolbar-title>Objetivos programáticos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <template v-slot:activator="{}">
               <v-row>
                 <v-col align="end">
-                  <v-btn class="mb-2 btn-normal" rounded @click="openModal">
+                  <v-btn class="mb-2 btn-normal" rounded :disabled="loading != false" @click="openModal">
                     Agregar
                   </v-btn>
                 </v-col>
@@ -74,12 +89,12 @@
                         }"
                         :min="1"
                         :max="500"
-                        :rows="2"
+                        :rows="6"
                       />
                     </v-col>
                     <!-- Description -->
                     <!-- Eje -->
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="12" md="12">
                       <base-select
                         label="Eje"
                         v-model.trim="$v.editedItem.axis_description.$model"
@@ -190,12 +205,12 @@ import { required, minLength, maxLength } from "vuelidate/lib/validators";
 export default {
   data: () => ({
     search: "",
+    loading: false,
     dialog: false,
     dialogDelete: false,
     headers: [
       { text: "OBJETIVO PROGRAMÁTICO", value: "description" },
       { text: "EJE", value: "axis_description" },
-      //{ text: "EJECUTADO", value: "executed" },
       { text: "USUARIO", value: "user_name" },
       { text: "ACCIONES", value: "actions", sortable: false },
     ],
@@ -203,17 +218,14 @@ export default {
     recordsFiltered: [],
     editedIndex: -1,
     editedItem: {
-      /*user_name: "",*/
       axis_description: "",
       description: "",
-      //executed: false,
     },
     defaultItem: {
-      /*user_name: "",*/
       axis_description: "",
       description: "",
-      //executed: false,
     },
+    actualUser: {},
     textAlert: "",
     alertEvent: "success",
     showAlert: false,
@@ -225,12 +237,6 @@ export default {
   // Validations
   validations: {
     editedItem: {
-      /*executed: {
-        required,
-      },
-      user_name: {
-        required,
-      },*/
       axis_description: {
         required,
       },
@@ -263,6 +269,7 @@ export default {
 
   methods: {
     async initialize() {
+      this.loading = true;
       this.records = [];
       this.recordsFiltered = [];
 
@@ -287,17 +294,15 @@ export default {
         this.users = responses[1].data.users;
         this.axis = responses[2].data.axisCuscas;
 
-        console.log(responses);
-
         this.recordsFiltered = this.records;
       }
+      this.loading = false;
     },
 
     editItem(item) {
       this.dialog = true;
       this.editedIndex = this.recordsFiltered.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      //this.$v.editedItem.user_name.$model = this.editedItem.user_name;
       this.$v.editedItem.axis_description.$model =
         this.editedItem.axis_description;
     },
@@ -433,7 +438,6 @@ export default {
       this.dialog = true;
       this.editedItem.axis_description = this.axis[0].axis_description;
       this.editedItem.description = "";
-      //this.editedItem.executed = false;
     },
   },
 };
