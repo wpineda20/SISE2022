@@ -226,7 +226,6 @@ class PDFController extends Controller
         $pdf->Output("Reporte Mensual " . $request->month_name . ".pdf", "I");
     }
 
-
     /**
      * Generate Axis PDF.
      *
@@ -351,7 +350,6 @@ class PDFController extends Controller
 
         return $pdf->stream("Reporte " . $axis_title  . ".pdf");
     }
-
 
     /**
      * Generate Accumulated PDF
