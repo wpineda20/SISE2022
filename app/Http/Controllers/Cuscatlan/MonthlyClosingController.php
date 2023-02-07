@@ -20,12 +20,11 @@ class MonthlyClosingController extends Controller
     */
     public function index()
     {
-        $monthlyClosings = MonthlyClosing::select('monthly_closings.id', 'month_name', 'year_name', 'active')
+        $monthlyClosings = MonthlyClosing::select('monthly_closings.id', 'closing_date', 'year_name')
         ->join('years as y', 'monthly_closings.year_id', '=', 'y.id')
-        ->join('months as m', 'monthly_closings.month_id', '=', 'm.id')
         ->get();
 
-        $monthlyClosings = EncryptController::encryptArray($monthlyClosings, ['id', 'year_id', 'month_id']);
+        $monthlyClosings = EncryptController::encryptArray($monthlyClosings, ['id', 'year_id']);
 
         return response()->json(['message' => 'success', 'monthlyClosings'=>$monthlyClosings]);
     }

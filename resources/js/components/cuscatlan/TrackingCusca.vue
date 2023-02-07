@@ -1,5 +1,5 @@
 <template>
-  <div data-app>
+  <v-container data-app ref="top">
     <alert-time-out
       :redirect="redirectSessionFinished"
       @redirect="updateTimeOut($event)"
@@ -97,20 +97,30 @@
                     <!-- Tracking Detail -->
 
                     <!-- Bubget executed -->
-                    <v-col cols="12" sm="12" md="12">
+                    <v-col cols="12" sm="12" md="6">
                       <base-input
                         label="Presupuesto ejecutado"
                         v-model.trim="$v.editedItem.budget_executed.$model"
                         :validation="$v.editedItem.budget_executed"
                         type="number"
-                        :validationsInput="{
-                          required: true,
-                        }"
+                        :disabled="true"
                       />
                     </v-col>
                     <!-- Bubget executed -->
-                    <!-- Annual Actions -->
+
+                    <!-- Year Goal Actions -->
                     <v-col cols="12" sm="6" md="6">
+                      <base-input
+                        label="Meta de acciones anuales"
+                        v-model.trim="$v.editedItem.year_goal_actions.$model"
+                        :validation="$v.editedItem.year_goal_actions"
+                        type="number"
+                        :disabled="true"
+                      />
+                    </v-col>
+                    <!-- Year Goal Actions -->
+                    <!-- Annual Actions -->
+                    <v-col cols="12" sm="6" md="12">
                       <base-input
                         label="Número de acciones"
                         v-model.trim="$v.editedItem.number_actions.$model"
@@ -120,6 +130,15 @@
                         :min="2000"
                         :max="2050"
                       />
+                      <p
+                        v-show="verifyActionsText"
+                        class="mb-0 orange-text"
+                        style="display: flex; align-items: center"
+                      >
+                        <i class="material-icons">error_outline</i>
+                        El número de acciones no debe ser mayor a la meta de
+                        acciones anuales.
+                      </p>
                     </v-col>
                     <!-- Annual Actions -->
 
@@ -154,12 +173,7 @@
                     <!-- Tracking Status -->
                     <!-- Observation -->
 
-                    <v-col
-                      cols="12"
-                      sm="12"
-                      md="12"
-                      v-if="role == 'Administrador' || role == 'Auditor'"
-                    >
+                    <v-col cols="12" sm="12" md="12">
                       <base-text-area
                         label="Observación"
                         v-model.trim="$v.editedItem.observation.$model"
@@ -169,6 +183,7 @@
                           required: false,
                         }"
                         :readonly="role == 'Enlace'"
+                        :disabled="role == 'Enlace'"
                         :min="0"
                         :max="500"
                         :rows="4"
@@ -178,12 +193,7 @@
 
                     <!-- Reply -->
 
-                    <v-col
-                      cols="12"
-                      sm="12"
-                      md="12"
-                      v-if="role == 'Administrador' || role == 'Auditor'"
-                    >
+                    <!-- <v-col cols="12" sm="12" md="12">
                       <base-text-area
                         label="Respuesta"
                         v-model.trim="$v.editedItem.reply.$model"
@@ -194,11 +204,12 @@
                           minLength: true,
                           maxLength: true,
                         }"
+                        :readonly="role == 'Enlace'"
                         :min="0"
                         :max="500"
                         :rows="4"
                       />
-                    </v-col>
+                    </v-col> -->
                     <!-- Reply -->
                   </v-row>
                   <!-- Form -->
@@ -293,7 +304,7 @@
         </a>
       </template>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -334,8 +345,9 @@ export default {
       status_name: "",
       executed: false,
       observation: "",
-      reply: "",
+      // reply: "",
       number_actions: 0,
+      year_goal_actions: "",
     },
     defaultItem: {
       tracking_detail: "",
@@ -344,9 +356,12 @@ export default {
       status_name: "",
       executed: false,
       observation: "",
-      reply: "",
+      // reply: "",
+      number_actions: 0,
+      year_goal_actions: "",
     },
 
+    verifyActionsText: false,
     textAlert: "",
     alertEvent: "success",
     showAlert: false,
@@ -368,7 +383,11 @@ export default {
         minLength: minLength(15),
         maxLength: maxLength(500),
       },
-
+      year_goal_actions: {
+        required,
+        minLength: minLength(1),
+        maxLength: maxLength(10),
+      },
       number_actions: {
         required,
         minLength: minLength(1),
@@ -393,10 +412,10 @@ export default {
         minLength: minLength(0),
         maxLength: maxLength(500),
       },
-      reply: {
-        minLength: minLength(0),
-        maxLength: maxLength(500),
-      },
+      // reply: {
+      //   minLength: minLength(0),
+      //   maxLength: maxLength(500),
+      // },
     },
   },
 
@@ -509,6 +528,9 @@ export default {
       this.closeDelete();
     },
 
+    closeVerifyActions() {
+      this.dialog = false;
+    },
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -552,10 +574,16 @@ export default {
         // console.log(res);
         if (res.data.reason) {
           this.updateAlert(true, res.data.reason, "fail");
+          this.close();
+          this.initialize();
         }
 
         if (res.data.verifyActions) {
-          this.updateAlert(true, res.data.verifyActions, "fail");
+          // this.upd<ateAlert(true, res.data.verifyActions, "fail");
+          this.verifyActionsText = true;
+          setTimeout(() => {
+            this.verifyActionsText = false;
+          }, 6000);
         }
 
         if (
@@ -568,6 +596,8 @@ export default {
             "Registro actualizado correctamente.",
             "success"
           );
+          this.close();
+          this.initialize();
         }
       } else {
         const res = await trackingCuscaApi
@@ -584,9 +614,9 @@ export default {
             "success"
           );
         }
+        this.close();
+        this.initialize();
       }
-      this.close();
-      this.initialize();
     },
 
     searchValue() {
@@ -615,6 +645,10 @@ export default {
       this.textAlert = text;
       this.alertEvent = event;
       this.showAlert = show;
+
+      if (show) {
+        this.$refs.top.scrollIntoView();
+      }
     },
 
     updateTimeOut(event) {
@@ -629,7 +663,7 @@ export default {
       this.editedItem.status_name = this.trakingStatuses[0].status_name;
       this.editedItem.tracking_detail = "";
       this.editedItem.observation = "";
-      this.editedItem.reply = "";
+      // this.editedItem.reply = "";
       this.editedItem.budget_executed = 0;
       this.editedItem.number_actions = 0;
       this.editedItem.executed = false;

@@ -78,10 +78,10 @@ class TrackingCuscaController extends Controller
             'traking_cusca_month_year_action.number_actions',
             'traking_cusca_month_year_action.executed',
             'traking_cusca_month_year_action.observation',
-            'traking_cusca_month_year_action.reply',
+            // 'traking_cusca_month_year_action.reply',
             'ts.*',
             'ou.*',
-            'reply',
+            // 'reply',
             'observation',
             'traking_cusca_month_year_action.id as id',
         )
@@ -200,7 +200,7 @@ class TrackingCuscaController extends Controller
         }
 
         $traking->observation = $request->observation ?? "";
-        $traking->reply = $request->reply ?? "";
+        // $traking->reply = $request->reply ?? "";
         $traking->number_actions = $request->number_actions;
         $traking->tracking_detail = $request->tracking_detail;
         $traking->executed = ($request->executed) ? "SI" : "NO";

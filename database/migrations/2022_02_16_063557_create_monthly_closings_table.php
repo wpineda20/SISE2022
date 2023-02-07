@@ -16,8 +16,7 @@ class CreateMonthlyClosingsTable extends Migration
         Schema::create('monthly_closings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('year_id')->references('id')->on('years');
-            $table->foreignId('month_id')->references('id')->on('months');
-            $table->string('active');
+            $table->dateTime('closing_date');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -14,6 +14,7 @@
       :max="max"
       :type="type"
       :readonly="readonly"
+      :disabled="disabled"
       @input="updateValue"
       v-mask="mask"
       @keyup="validateText()"
@@ -177,6 +178,10 @@ export default {
       default: "",
     },
     readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
       type: Boolean,
       default: false,
     },

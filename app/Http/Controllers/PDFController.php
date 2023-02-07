@@ -36,7 +36,7 @@ class MYPDF extends Fpdi
         // Set path image
         $img_file = public_path("Escudo_D.png");
         // Set background image
-        $this->Image($img_file, 192, 30, 170, 170, '', '', '', false, 200, '', false, false, 0);
+        $this->Image($img_file, 155, 90, 120, 120, '', '', '', false, 200, '', false, false, 0);
         // Restore full opacity
         $this->SetAlpha(1);
         // restore auto-page-break status
@@ -60,10 +60,10 @@ class PDFController extends Controller
         ini_set("memory_limit", "1024M");
 
         //Create new PDF
-        $pdf = new MYPDF('L', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf = new MYPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
         // Set margins
-        // $pdf->SetMargins(15, 27, 15);
+        $pdf->SetMargins(21, 27, 21);
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(0);
 
@@ -77,7 +77,7 @@ class PDFController extends Controller
         $pdf->setImageScale(1.25);
 
         // Set source file
-        $pdf->setSourceFile(public_path("ejecutivo_s.pdf"));
+        $pdf->setSourceFile(public_path("ejecutivo_p.pdf"));
 
         // Add page
         $pdf->AddPage();
@@ -93,22 +93,22 @@ class PDFController extends Controller
 
         // Titles
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->setXY(11, 10);
-        $pdf->setFontSize(13);
+        $pdf->setFontSize(10);
+
+        $pdf->setXY(86, 22);
+        $pdf->writeHTML("<b>MINISTERIO DE CULTURA</b>");
+
+        $pdf->setXY(58, 28);
         $pdf->writeHTML("<b>Dirección General de Planificación y Desarrollo Institucional</b>");
 
-        $pdf->setXY(11, 17);
-        $pdf->setFontSize(13);
-        $pdf->writeHTML("<b>Reporte de Seguimiento Mensual Año $currentYear</b>");
+        $pdf->setY(34);
+        $pdf->Write(1, "Reporte de Seguimiento Mensual Año $currentYear", '', '', 'C');
 
-        $pdf->setFontSize(12);
-        $pdf->setY(26);
-        $pdf->Write(1, "$request->ou_name", '', '', 'L');
-        $pdf->setY(33);
-        $pdf->Write(1, "$request->month_name", '', '', 'L');
+        $pdf->setY(40);
+        $pdf->Write(1, "$request->ou_name - $request->month_name", '', '', 'C');
 
         // Table
-        $pdf->setY(45);
+        $pdf->setY(50);
         $axis = AxisCusca::select(
             '*',
             'po.*',
@@ -186,6 +186,9 @@ class PDFController extends Controller
 
         $html = '
         <style>
+            html{
+                font-size: 10px !important;
+            }
             table,
             th,
             td {
@@ -199,14 +202,14 @@ class PDFController extends Controller
                 background-color: lightblue;
             }
             .fs-sm{
-                font-size: 9px;
+                font-size: 10px;
                 text-align: center;
             }
             .w-10{
-                width: 11% !important;
+                width: 14% !important;
             }
             .w-70{
-                width: 67% !important;
+                width: 58% !important;
             }
         </style>
         <table id="table" cellspacing="0" cellpadding="5">
@@ -294,7 +297,7 @@ class PDFController extends Controller
             }
 
             $pdf = DomPDF::loadView("cuscatlan.PDF.report", compact("data", "axis", "axis_title"))
-                ->setPaper("a4", "landscape");
+                ->setPaper("A4", "portrait");
 
             return $pdf->stream("Reporte " . $axis_title . ".pdf");
         }
@@ -346,7 +349,7 @@ class PDFController extends Controller
         }
 
         $pdf = DomPDF::loadView("cuscatlan.PDF.report", compact("data", "axis", "axis_title"))
-            ->setPaper("a4", "landscape");
+            ->setPaper("A4", "portrait");
 
         return $pdf->stream("Reporte " . $axis_title  . ".pdf");
     }
@@ -367,10 +370,11 @@ class PDFController extends Controller
         $end_month = $request->end_month;
 
         //Create new PDF
-        $pdf = new MYPDF('L', 'mm', '', true, 'UTF-8', false);
+        $pdf = new MYPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
         // Set margins
         // $pdf->SetMargins(15, 27, 15);
+        $pdf->SetMargins(21, 27, 21);
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(0);
 
@@ -384,7 +388,7 @@ class PDFController extends Controller
         $pdf->setImageScale(1.25);
 
         // Set source file
-        $pdf->setSourceFile(public_path("ejecutivo_s.pdf"));
+        $pdf->setSourceFile(public_path("ejecutivo_p.pdf"));
 
         // Add page
         $pdf->AddPage();
@@ -397,23 +401,22 @@ class PDFController extends Controller
 
         // Titles
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->setXY(115, 28);
-        $pdf->setFontSize(12);
+        $pdf->setXY(86, 28);
+        $pdf->setFontSize(10);
         $pdf->writeHTML("<b>MINISTERIO DE CULTURA</b>");
-        $pdf->setXY(80, 35);
-        $pdf->setFontSize(12);
+
+        $pdf->setXY(58, 35);
         $pdf->writeHTML("<b>Dirección General De Planificación y Desarrollo Institucional</b>");
 
-        $pdf->setXY(123, 42);
-        $pdf->setFontSize(12);
-        $pdf->writeHTML("Reporte Acumulado");
+        $pdf->setY(42);
+        $pdf->Write(1, "Reporte Acumulado", '', '', 'C');
+        // $pdf->writeHTML("Reporte Acumulado");
 
-        $pdf->setFontSize(12);
         $pdf->setY(49);
         $pdf->Write(1, "$request->ou_name $start_month - $end_month $currentYear", '', '', 'C');
 
         // Table
-        $pdf->setY(65);
+        $pdf->setY(60);
 
         $results = ResultsCusca::select(
             'results_cusca.*',
@@ -500,6 +503,9 @@ class PDFController extends Controller
 
         $html = '
         <style>
+           html {
+                font-size: 10px !important;
+            }
             table {
                 width: 100%;
                 border: 2px solid #a19d9d;
@@ -515,10 +521,10 @@ class PDFController extends Controller
         <table cellspacing="0" cellpadding="5">
                 <tr>
                     <td style="text-align: center; font-weight:bold; width: 30%">Resultado</td>
-                    <td style="text-align: center; font-weight:bold; width: 40%">Acción</td>
-                    <td style="text-align: center; font-weight:bold; width: 10%">Número de Acciones Anuales</td>
-                    <td style="text-align: center; font-weight:bold; width: 10%">Avance</td>
-                    <td style="text-align: center; font-weight:bold; width: 10%">Porcentaje De Avance</td>
+                    <td style="text-align: center; font-weight:bold; width: 35%">Acción</td>
+                    <td style="text-align: center; font-weight:bold; width: 12%">Número de Acciones Anuales</td>
+                    <td style="text-align: center; font-weight:bold; width: 11%">Avance</td>
+                    <td style="text-align: center; font-weight:bold; width: 12%">Porcentaje De Avance</td>
                 </tr>
             <tbody>
        ';

@@ -25,6 +25,7 @@ use App\Http\Controllers\Cuscatlan\ResultsCuscaController;
 use App\Http\Controllers\Cuscatlan\ActionsCuscaController;
 use App\Http\Controllers\Cuscatlan\TrackingCuscaController;
 use App\Http\Controllers\Cuscatlan\TrackingObservationCuscaController;
+use App\Http\Controllers\Cuscatlan\CronClosingController;
 use App\Http\Controllers\PDFController;
 use GuzzleHttp\Middleware;
 
@@ -56,10 +57,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             return view('cuscatlan.reports_cusca.index');
         });
 
-        // Graphics Cusca
-        // Route::get('/graphicsCuscatlan', function () {
-        //     return view('cuscatlan.graphics_cusca.index');
-        // });
+        // Reports
+        Route::get('/reports', function () {
+            return view('reports.index');
+        });
 
         // PDF Mensual
         Route::get('pdf/mensual', [PDFController::class, 'generateMensualPDF']);
@@ -87,9 +88,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::resource('/api/indicator', IndicatorController::class);
         Route::get('/api/month/tracking', [MonthController::class, 'indexTracking']);
         Route::post('/api/month/monthsAllowed', [MonthController::class, 'monthsAllowed']);
+        Route::resource('/api/monthlyClosing', MonthlyClosingController::class);
+        Route::resource('/api/cronClosing', CronClosingController::class);
         // Route::resource('/api/financing', FinancingController::class);
         // Route::resource('/api/poaClosing', PoaClosingController::class);
-        // Route::resource('/api/monthlyClosing', MonthlyClosingController::class);
 
         Route::resource('/api/axisCusca', AxisCuscaController::class);
         Route::resource('/api/programmaticObjective', ProgrammaticObjectiveController::class);
@@ -164,16 +166,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             return view('cuscatlan.tracking_cusca.index');
         });
 
-        // Route::get('/financings', function () {
-        //     return view('cuscatlan.financing.index');
-        // });
-
-        // Route::get('/monthlyClosings', function () {
-        //     return view('cuscatlan.monthly_closing.index');
-        // });
-
+        Route::get('/monthlyClosings', function () {
+            return view('cuscatlan.monthly_closing.index');
+        });
+        
+        Route::get('/cronClosing', function () {
+            return view('cuscatlan.cron_closing.index');
+        });
+        
         // Route::get('/poaClosings', function () {
         //     return view('cuscatlan.poa_closing.index');
+        // });
+
+        // Route::get('/financings', function () {
+        //     return view('cuscatlan.financing.index');
         // });
 
         // Route::get('/annualResults', function () {

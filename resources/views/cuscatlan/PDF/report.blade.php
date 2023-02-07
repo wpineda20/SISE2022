@@ -1,6 +1,11 @@
 <style>
     html {
         font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px !important;
+    }
+
+    body {
+        margin: 0cm 0.5cm
     }
 
     table {
@@ -91,12 +96,12 @@
         position: fixed;
 
         /** Set an image position **/
-        bottom: 0cm;
-        left: 20cm;
+        bottom: 7cm;
+        left: 13cm;
 
         /** Image dimensions **/
-        width: 16cm;
-        height: 16cm;
+        width: 13cm;
+        height: 13cm;
 
         /** Set watermark behind every content **/
         z-index: -1000;
@@ -113,7 +118,7 @@
         <img src="logos/Escudo_D.png" height="100%" width="100%" />
     </div>
     <right>
-        <img src="img/cultura_logo.jpg" alt="" width="20%" style="margin-left: 51rem;">
+        <img src="img/cultura_logo.jpg" alt="" width="20%" style="margin-left: 43rem;">
     </right>
     <center>
         <p style="padding: 0px; margin-top: -20px">
