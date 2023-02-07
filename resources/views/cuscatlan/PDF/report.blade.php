@@ -173,7 +173,7 @@
         </tbody>
     </table>
     @else
-    <table id="myTable">
+    <table id="myTable" style="margin-bottom: 25px !important">
         {{-- <thead> --}}
             <tr>
                 <td colspan="1" style="text-transform: capitalize; text-align: center"> <b>Ejes</b></td>
@@ -226,8 +226,14 @@
             @endforeach
         </tbody>
     </table>
+    <!-- Footer Signature -->
+    <div style="bottom:-12; position:absolute; left: 22%">
+        <hr width="400px" style="height:1px;border-width:0;color:black;background-color:black">
+        <p style="font-size:11px; font-style: italic; text-align:center">Firma y Sello</p>
+        <p style="font-size:11px; font-style: italic; text-align:center">Director/a de la dependencia que presenta</p>
+    </div>
+    <!-- Footer Signature -->
     @endif
-
 
 </body>
 

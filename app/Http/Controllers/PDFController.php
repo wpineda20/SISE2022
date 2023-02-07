@@ -71,7 +71,7 @@ class MYPDF extends Fpdi
             // $this->writeHTMLCell(0, 0, '', '', $this, 0, 1, 0, true, '', true);
             // Position at 15 mm from bottom
             $this->SetY(-18);
-            $this->Cell(0, 10, 'Nombre y Sello', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Firma y Sello', 0, false, 'C', 0, '', 0, false, 'T', 'M');
             $this->SetY(-15);
             $this->Cell(0, 10, 'Director/a de la dependencia que presenta', 0, false, 'C', 0, '', 0, false, 'T', 'M');
         } else {
