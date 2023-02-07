@@ -44,6 +44,40 @@ class MYPDF extends Fpdi
         // Set the starting point for the page content (z-index)
         $this->setPageMark();
     }
+
+    protected $last_page_flag = false;
+
+    public function Close()
+    {
+        $this->last_page_flag = true;
+        parent::Close();
+    }
+
+    public function Footer()
+    {
+        if ($this->last_page_flag) {
+            // Set font
+            $this->SetFont('helvetica', 'I', 8);
+
+            // center of ellipse
+            $xc = 108;
+            $yc = 264;
+            // ellipse axis
+            // X Y axis
+            $this->SetDrawColor(10, 10, 10);
+            $this->Line($xc - 50, $yc, $xc + 50, $yc);
+            // $this->Line($xc, $yc - 50, $xc, $yc + 50);
+            // Print text using writeHTMLCell()
+            // $this->writeHTMLCell(0, 0, '', '', $this, 0, 1, 0, true, '', true);
+            // Position at 15 mm from bottom
+            $this->SetY(-18);
+            $this->Cell(0, 10, 'Nombre y Sello', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->SetY(-15);
+            $this->Cell(0, 10, 'Director/a de la dependencia que presenta', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        } else {
+            //     // ... footer for the normal page ...
+        }
+    }
 }
 
 class PDFController extends Controller
@@ -68,7 +102,7 @@ class PDFController extends Controller
         $pdf->SetFooterMargin(0);
 
         // Remove default footer
-        $pdf->setPrintFooter(false);
+        $pdf->setPrintFooter(true);
 
         // Set auto page breaks
         $pdf->SetAutoPageBreak(TRUE, 10);
@@ -379,7 +413,7 @@ class PDFController extends Controller
         $pdf->SetFooterMargin(0);
 
         // Remove default footer
-        $pdf->setPrintFooter(false);
+        $pdf->setPrintFooter(true);
 
         // Set auto page breaks
         $pdf->SetAutoPageBreak(TRUE, 10);
