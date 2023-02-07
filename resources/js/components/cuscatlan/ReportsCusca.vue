@@ -241,7 +241,7 @@ export default {
           this.months[new Date().getMonth()].month_name;
         this.parameters.period_name = this.periods[0].period_name;
       }
-
+      this.validateTypeReport();
       this.loading = false;
     },
 
@@ -302,6 +302,12 @@ export default {
           this.reportDialog = false;
         }, 1000);
         return;
+      }
+    },
+
+    validateTypeReport() {
+      if (this.actualUser.role == "Auditor") {
+        this.reportTypes.pop();
       }
     },
 
