@@ -78,10 +78,11 @@
                         <li><a href="{{ url('/units') }}">Unidades de medida</a></li>
                         <li><a href="{{ url('/trakingStatus') }}">Estados de seguimiento</a></li>
                         <li><a href="{{ url('/indicators') }}">Indicadores</a></li>
+                        <li><a href="{{ url('/cronClosing') }}">Cierre mensual</a></li>
+                        <li><a href="{{ url('/monthlyClosings') }}">Bitácora de cierres mensuales</a></li>
                         <li><a href="{{ url('/users') }}">Usuarios</a></li>
                         {{-- <li><a href="{{ url('/financings') }}">Financiamientos</a></li> --}}
                         {{-- <li><a href="{{ url('/poaClosings') }}">Cierre POA</a></li> --}}
-                        {{-- <li><a href="{{ url('/monthlyClosings') }}">Cierres mensuales</a></li> --}}
                         {{-- <li><a href="{{ url('/annualResults') }}">Resultados anuales</a></li> --}}
                         @endrole
 
@@ -273,7 +274,7 @@
                 @role('Administrador|Auditor')
                 <!-- Reportes -->
                 <li>
-                    <a href="{{ url('/reportsCuscatlan') }}" class="mb-1">
+                    <a href="{{ url('/reports') }}" class="mb-1">
                         <div class="icon-link">
                             <i class="material-icons md-19">description</i>
                             <p class="link">Reportes</p>

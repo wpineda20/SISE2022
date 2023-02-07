@@ -12,153 +12,129 @@
       class="mb-2"
     />
 
-    <v-card class="p-4" style="border-radius: 15px">
-      <v-container>
-        <h3>Reportes</h3>
-        <hr />
-        <v-row v-if="!loading">
-          <!-- Type report -->
-          <v-col cols="12" sm="12" md="6" offset-md="3">
-            <base-select
-              label="Tipo de reporte"
-              v-model.trim="$v.parameters.reportTypes.$model"
-              :items="reportTypes"
-              item="text"
-              :validation="$v.parameters.reportTypes"
-            />
-          </v-col>
+    <loader v-show="loading" />
+    <v-row v-if="!loading" class="pt-4">
+      <!-- <h3>Reportes Plan Cuscatlán</h3> -->
+      <!-- Type report -->
+      <v-col cols="12" sm="12" md="6" offset-md="3">
+        <base-select
+          label="Tipo de reporte"
+          v-model.trim="$v.parameters.reportTypes.$model"
+          :items="reportTypes"
+          item="text"
+          :validation="$v.parameters.reportTypes"
+        />
+      </v-col>
 
-          <!-- Axis -->
-          <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte acumulado' &&
-              parameters.reportTypes != 'Reporte mensual'
-            "
-          >
-            <base-select
-              label="Ejes"
-              v-model.trim="$v.parameters.axis_description.$model"
-              :items="axis"
-              item="axis_description"
-              :validation="$v.parameters.axis_description"
-            />
-          </v-col>
-          <!-- Axis -->
+      <!-- Axis -->
+      <v-col
+        cols="12"
+        sm="12"
+        md="6"
+        offset-md="3"
+        v-if="
+          parameters.reportTypes != 'Reporte acumulado' &&
+          parameters.reportTypes != 'Reporte mensual'
+        "
+      >
+        <base-select
+          label="Ejes"
+          v-model.trim="$v.parameters.axis_description.$model"
+          :items="axis"
+          item="axis_description"
+          :validation="$v.parameters.axis_description"
+        />
+      </v-col>
+      <!-- Axis -->
 
-          <!-- Organizational Units -->
-          <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="parameters.reportTypes != 'Reporte despacho'"
-          >
-            <base-select
-              label="Unidad/Dirección"
-              v-model.trim="$v.parameters.ou_name.$model"
-              :items="organizationalUnits"
-              item="ou_name"
-              :validation="$v.parameters.ou_name"
-            />
-          </v-col>
-          <!-- Organizational Units -->
+      <!-- Organizational Units -->
+      <v-col
+        cols="12"
+        sm="12"
+        md="6"
+        offset-md="3"
+        v-if="parameters.reportTypes != 'Reporte despacho'"
+      >
+        <base-select
+          label="Unidad/Dirección"
+          v-model.trim="$v.parameters.ou_name.$model"
+          :items="organizationalUnits"
+          item="ou_name"
+          :validation="$v.parameters.ou_name"
+        />
+      </v-col>
+      <!-- Organizational Units -->
 
-          <!-- Month -->
-          <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte acumulado' &&
-              parameters.reportTypes != 'Reporte despacho'
-            "
-          >
-            <base-select-search
-              label="Mes"
-              v-model.trim="$v.parameters.month_name.$model"
-              :items="months"
-              item="month_name"
-              :validation="$v.parameters.month_name"
-            />
-          </v-col>
-          <!-- Month -->
+      <!-- Month -->
+      <v-col
+        cols="12"
+        sm="12"
+        md="6"
+        offset-md="3"
+        v-if="
+          parameters.reportTypes != 'Reporte acumulado' &&
+          parameters.reportTypes != 'Reporte despacho'
+        "
+      >
+        <base-select-search
+          label="Mes"
+          v-model.trim="$v.parameters.month_name.$model"
+          :items="months"
+          item="month_name"
+          :validation="$v.parameters.month_name"
+        />
+      </v-col>
+      <!-- Month -->
 
-          <!-- Periods -->
-          <!-- <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte mensual' &&
-              parameters.reportTypes != 'Reporte despacho'
-            "
-          >
-            <base-select-search
-              label="Periodo"
-              v-model.trim="$v.parameters.period_name.$model"
-              :items="periods"
-              item="period_name"
-              :validation="$v.parameters.period_name"
-            />
-          </v-col> -->
-          <!-- Periods -->
-          <!-- Start Month -->
-          <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte mensual' &&
-              parameters.reportTypes != 'Reporte despacho'
-            "
-          >
-            <base-select-search
-              label="Mes inicial"
-              v-model.trim="$v.parameters.start_month_name.$model"
-              :items="months"
-              item="month_name"
-              :validation="$v.parameters.start_month_name"
-            />
-          </v-col>
-          <!-- Start Month -->
-          <!-- End Month -->
-          <v-col
-            cols="12"
-            sm="12"
-            md="6"
-            offset-md="3"
-            v-if="
-              parameters.reportTypes != 'Reporte mensual' &&
-              parameters.reportTypes != 'Reporte despacho'
-            "
-          >
-            <base-select-search
-              label="Mes final"
-              v-model.trim="$v.parameters.end_month_name.$model"
-              :items="months"
-              item="month_name"
-              :validation="$v.parameters.end_month_name"
-            />
-          </v-col>
-          <!-- End Month -->
+      <!-- Start Month -->
+      <v-col
+        cols="12"
+        sm="12"
+        md="6"
+        offset-md="3"
+        v-if="
+          parameters.reportTypes != 'Reporte mensual' &&
+          parameters.reportTypes != 'Reporte despacho'
+        "
+      >
+        <base-select-search
+          label="Mes inicial"
+          v-model.trim="$v.parameters.start_month_name.$model"
+          :items="months"
+          item="month_name"
+          :validation="$v.parameters.start_month_name"
+        />
+      </v-col>
+      <!-- Start Month -->
+      <!-- End Month -->
+      <v-col
+        cols="12"
+        sm="12"
+        md="6"
+        offset-md="3"
+        v-if="
+          parameters.reportTypes != 'Reporte mensual' &&
+          parameters.reportTypes != 'Reporte despacho'
+        "
+      >
+        <base-select-search
+          label="Mes final"
+          v-model.trim="$v.parameters.end_month_name.$model"
+          :items="months"
+          item="month_name"
+          :validation="$v.parameters.end_month_name"
+        />
+      </v-col>
+      <!-- End Month -->
 
-          <!-- Generate report -->
-          <v-col cols="12" sm="6" md="6" offset-md="3" align="center">
-            <v-btn class="btn btn-normal w-100" @click="generateReport()">
-              Generar reporte
-            </v-btn>
-          </v-col>
-          <alert-dialog :text="textReportDialog" :dialog="reportDialog" />
-        </v-row>
-      </v-container>
-    </v-card>
+      <!-- Generate report -->
+      <v-col cols="12" sm="6" md="6" offset-md="3" align="center">
+        <v-btn class="btn btn-normal w-100" @click="generateReport()">
+          Generar reporte
+        </v-btn>
+      </v-col>
+      <alert-dialog :text="textReportDialog" :dialog="reportDialog" />
+    </v-row>
   </div>
 </template>
 
@@ -167,6 +143,7 @@ import axisCuscaApi from "../../apis/axisCuscaApi";
 import organizationalUnitApi from "../../apis/organizationalUnitApi";
 import monthApi from "../../apis/monthApi";
 import periodApi from "../../apis/periodApi";
+import userApi from "../../apis/userApi";
 import { required, minLength, maxLength } from "vuelidate/lib/validators";
 import AlertDialog from "../base-components/AlertDialog.vue";
 
@@ -200,6 +177,7 @@ export default {
       loading: false,
       textReportDialog: "",
       reportDialog: false,
+      actualUser: {},
     };
   },
 
@@ -242,6 +220,7 @@ export default {
         organizationalUnitApi.get(),
         monthApi.post("/monthsAllowed"),
         periodApi.get(),
+        userApi.post("/actualUser"),
       ];
 
       const responses = await Promise.all(requests).catch((error) => {
@@ -254,6 +233,7 @@ export default {
         this.organizationalUnits = responses[1].data.organizationalUnits;
         this.months = responses[2].data.monthsAllowed;
         this.periods = responses[3].data.periods;
+        this.actualUser = responses[4].data.user;
 
         this.parameters.axis_description = "General";
         this.parameters.ou_name = this.organizationalUnits[0].ou_name;

@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             MonthSeeder::class,
             YearSeeder::class,
             UserSeeder::class,
-
+            MonthlyClosingSeeder::class,
+            CronClosingSeeder::class,
         ]);
     }
 }
