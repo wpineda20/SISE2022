@@ -252,10 +252,7 @@ footer {
 .link {
     font-size: 12px;
     color: $white;
-    // text-align: center !important;
-    // justify-content: center !important;
-    margin-bottom: 0px;
-    margin-top: 5px;
+    text-align: center;
 }
 
 .sidebar {
@@ -263,7 +260,7 @@ footer {
     top: 0;
     left: 0;
     height: 100%;
-    width: 200px;
+    width: 100px;
     background: $grey-primary;
     z-index: 100;
     transition: all 0.5s ease;
@@ -306,7 +303,7 @@ footer {
     position: relative;
     list-style: none;
     transition: all 0.4s ease;
-    margin: 4px;
+    margin: 5px;
 }
 
 .sidebar .nav-links li:hover {
@@ -316,13 +313,11 @@ footer {
 }
 
 .sidebar.close .nav-links li .icon-link {
-    display: flex;
-    align-items: center;
-    line-height: 18px;
+    display: block;
 }
 
 .sidebar .nav-links li i {
-    height: 40px;
+    height: 50px;
     min-width: 50px;
     text-align: center;
     line-height: 50px;
@@ -384,9 +379,9 @@ footer {
 .sidebar.close .nav-links li .sub-menu {
     position: absolute;
     left: 100%;
-    // top: -10px;
+    top: -10px;
     margin-top: 0;
-    // padding: 10px 10px;
+    padding: 10px 20px;
     border-radius: 0 6px 6px 0;
     opacity: 0;
     display: block;
@@ -432,6 +427,10 @@ footer {
 .menu {
     // margin-top: 0.7rem;
     color: $grey-primary;
+}
+
+.menu:hover {
+    cursor: pointer;
 }
 
 .menu:hover {
