@@ -275,6 +275,8 @@ class PDFController extends Controller
 
         $axis_title = "";
         $data = $request->all();
+        $start_month = $request->start_month;
+        $end_month = $request->end_month;
 
         // Report All Axis
         if ($request->axis_description == "General") {
@@ -315,8 +317,15 @@ class PDFController extends Controller
                     )
 
                         ->join('years as y', 'y.id', '=', 'year_id')
-                        ->where('actions_cusca_id', $item->actions_id)
                         ->where('y.year_name', date('Y'))
+                        ->where('actions_cusca_id', $item->actions_id)
+                        // ->whereBetween(
+                        //     'month_id',
+                        //     [
+                        //         Month::where('month_name', $request->start_month)->first()?->id,
+                        //         Month::where('month_name', $request->end_month)->first()?->id
+                        //     ]
+                        // )
                         ->get();
 
                     foreach ($item->details as $detail) {
